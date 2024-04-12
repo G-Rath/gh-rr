@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/cli/go-gh/v2"
 	"gopkg.in/yaml.v3"
@@ -79,10 +80,10 @@ func buildAddReviewersArgs(repository string, pr string, reviewers []string) []s
 	return args
 }
 
-func addReviewers(repository string, pr string, reviewers []string) (string, error) {
-	stdOut, _, err := gh.Exec(buildAddReviewersArgs(repository, pr, reviewers)...)
+func addReviewers(repository string, pr string, reviewers []string) string {
+	_, stderr, _ := gh.Exec(buildAddReviewersArgs(repository, pr, reviewers)...)
 
-	return stdOut.String(), err
+	return stderr.String()
 }
 
 func run(args []string, stdout, stderr io.Writer) int {
@@ -125,14 +126,13 @@ func run(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stdout, "  - %s\n", reviewer)
 	}
 
-	out, err := addReviewers(repository, pr, reviewers)
+	out := addReviewers(repository, pr, reviewers)
 
-	if err != nil {
-		fmt.Fprintf(stderr, "%v\n", err)
+	if out != "" {
+		fmt.Fprintf(stdout, "\ncould not add reviewers: %s\n", strings.TrimSpace(out))
 
 		return 1
 	}
-	fmt.Fprint(stdout, out)
 
 	return 0
 }
