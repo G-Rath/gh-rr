@@ -463,3 +463,14 @@ func Test_run(t *testing.T) {
 		})
 	}
 }
+
+func Test_run_WithNoHomeVar(t *testing.T) {
+	t.Setenv("USERPROFILE", "")
+	t.Setenv("HOME", "")
+
+	defer func() { _ = recover() }()
+
+	run([]string{}, &bytes.Buffer{}, &bytes.Buffer{})
+
+	t.Errorf("function did not panic when home directory could not be found")
+}
