@@ -17,3 +17,22 @@ adding the following as reviewers to https://github.com/octocat/hello-world/pull
 [Test_run/fulsome_case - 2]
 
 ---
+
+[Test_run/invalid_config - 1]
+
+---
+
+[Test_run/invalid_config - 2]
+yaml: unmarshal errors:
+  line 1: cannot unmarshal !!! `` into main.Config
+
+---
+
+[Test_run/repository_does_not_exist_in_config - 1]
+
+---
+
+[Test_run/repository_does_not_exist_in_config - 2]
+no reviewers are configured for repository
+
+---

@@ -213,6 +213,16 @@ func Test_parseConfig(t *testing.T) {
 		wantErr bool
 	}{
 		{
+			name: "with no file",
+			args: args{
+				content: "",
+			},
+			want: Config{
+				Repositories: nil,
+			},
+			wantErr: true,
+		},
+		{
 			name: "with an empty file",
 			args: args{
 				content: "",
@@ -291,7 +301,11 @@ func Test_parseConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			f := writeTempConfigFile(t, dedent(t, tt.args.content))
+			f := "none"
+
+			if tt.name != "with no file" {
+				f = writeTempConfigFile(t, dedent(t, tt.args.content))
+			}
 
 			got, err := parseConfig(f)
 			if (err != nil) != tt.wantErr {
@@ -326,6 +340,27 @@ func Test_run(t *testing.T) {
 			args: args{
 				args:   []string{"octocat/hello-world", "123"},
 				config: "",
+			},
+			exit: 1,
+		},
+		{
+			name: "invalid config",
+			args: args{
+				args:   []string{"octocat/hello-world", "123"},
+				config: "!!!",
+			},
+			exit: 1,
+		},
+		{
+			name: "repository does not exist in config",
+			args: args{
+				args: []string{"octocat/hello-world", "123"},
+				config: `
+					repositories:
+						octocat/hello-sunshine:
+							- octodog
+							- octopus
+				`,
 			},
 			exit: 1,
 		},
