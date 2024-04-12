@@ -1,4 +1,4 @@
-module g-rath/gh-rr
+module github.com/g-rath/gh-rr
 
 go 1.21.5
 
