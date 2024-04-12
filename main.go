@@ -37,14 +37,7 @@ func parseConfig(file string) (Config, error) {
 	return config, nil
 }
 
-func loadConfigFile() (Config, error) {
-	// dir, err := os.UserHomeDir()
-	dir, err := os.Getwd()
-
-	if err != nil {
-		panic("oh noes, could not get home directory!")
-	}
-
+func loadConfigFile(dir string) (Config, error) {
 	file := filepath.Join(dir, "gh-rr.yml")
 
 	if _, err := os.Stat(file); err != nil {
@@ -86,8 +79,24 @@ func addReviewers(repository string, pr string, reviewers []string) string {
 	return stderr.String()
 }
 
+func mustGetUserHomeDir() string {
+	dir, err := os.UserHomeDir()
+
+	// would be seriously surprised if this happens for a regular user,
+	// so for now we're just going to burst into flames unless someone
+	// actually opens an issue, at which point we'll deal with this :)
+	if err != nil {
+		panic(fmt.Sprintf("failed to get user home dir: %v", err))
+	}
+
+	return dir
+}
+
 func run(args []string, stdout, stderr io.Writer) int {
 	cli := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+
+	configDir := cli.String("config-dir", mustGetUserHomeDir(), "directory to search for the configuration file")
+	isDryRun := cli.Bool("dry-run", false, "")
 
 	// cli is set for ExitOnError so this will never return an error
 	_ = cli.Parse(args)
@@ -96,7 +105,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	pr := cli.Arg(1)
 	url := buildPullRequestURL(repository, pr)
 
-	config, err := loadConfigFile()
+	config, err := loadConfigFile(*configDir)
 
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -126,12 +135,14 @@ func run(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stdout, "  - %s\n", reviewer)
 	}
 
-	out := addReviewers(repository, pr, reviewers)
+	if !*isDryRun {
+		out := addReviewers(repository, pr, reviewers)
 
-	if out != "" {
-		fmt.Fprintf(stdout, "\ncould not add reviewers: %s\n", strings.TrimSpace(out))
+		if out != "" {
+			fmt.Fprintf(stdout, "\ncould not add reviewers: %s\n", strings.TrimSpace(out))
 
-		return 1
+			return 1
+		}
 	}
 
 	return 0

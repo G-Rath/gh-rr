@@ -1,14 +1,24 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"os"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/gkampitakis/go-snaps/snaps"
 )
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	snaps.Clean(m, snaps.CleanOpts{Sort: true})
+	os.Exit(code)
+}
 
 func dedent(t *testing.T, str string) string {
 	t.Helper()
@@ -357,6 +367,90 @@ func Test_parseConfig(t *testing.T) {
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("parseConfig() got = %v, want %v", got, tt.want)
 			}
+		})
+	}
+}
+
+// writeConfigFileInTempDir makes a `gh-rr.yml` configuration file with the given
+// content for testing in a temporary directory, which is automatically cleaned up
+func writeConfigFileInTempDir(t *testing.T, content string) string {
+	t.Helper()
+
+	p, err := os.MkdirTemp("", "gh-rr-test-*")
+	if err != nil {
+		t.Fatalf("could not create test directory: %v", err)
+	}
+
+	// only create the config if we've been given some content
+	if content != "" {
+		err = os.WriteFile(filepath.Join(p, "gh-rr.yml"), []byte(content), 0600)
+		if err != nil {
+			t.Fatalf("could not create test config: %v", err)
+		}
+	}
+
+	// ensure the test directory is removed when we're done testing
+	t.Cleanup(func() { _ = os.RemoveAll(p) })
+
+	return p
+}
+
+func Test_run(t *testing.T) {
+	t.Parallel()
+
+	type args struct {
+		args   []string
+		config string
+	}
+	tests := []struct {
+		name string
+		args args
+		exit int
+	}{
+		{
+			name: "config does not exist",
+			args: args{
+				args:   []string{"octocat/hello-world", "123"},
+				config: "",
+			},
+			exit: 1,
+		},
+		{
+			name: "fulsome case",
+			args: args{
+				args: []string{"octocat/hello-world", "123"},
+				config: `
+					repositories:
+						octocat/hello-world:
+							- octocat
+						octocat/hello-sunshine:
+							- octodog
+							- octopus
+				`,
+			},
+			exit: 0,
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			configDir := writeConfigFileInTempDir(t, dedent(t, tt.args.config))
+
+			stdout := &bytes.Buffer{}
+			stderr := &bytes.Buffer{}
+
+			a := []string{"--dry-run", "--config-dir", configDir}
+			a = append(a, tt.args.args...)
+
+			got := run(a, stdout, stderr)
+			if got != tt.exit {
+				t.Errorf("run() = %v, want %v", got, tt.exit)
+			}
+
+			snaps.MatchSnapshot(t, stdout.String())
+			snaps.MatchSnapshot(t, stderr.String())
 		})
 	}
 }
