@@ -13,8 +13,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var ErrRepositoryConfigDoesNotExist = errors.New("no config exists for repository")
-
 type Config struct {
 	Repositories map[string][]string `yaml:"repositories"`
 	Path         string              `yaml:""`
@@ -122,7 +120,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	reviewers, err := determineReviewers(config, repository)
 
 	if err != nil {
-		if errors.Is(err, ErrRepositoryConfigDoesNotExist) {
+		if errors.Is(err, ErrRepositoryNotConfigured) {
 			fmt.Fprintf(stderr, "no reviewers are configured for %s\n", repository)
 		} else {
 			fmt.Fprintf(stderr, "%v\n", err)

@@ -33,6 +33,6 @@ yaml: unmarshal errors:
 ---
 
 [Test_run/repository_does_not_exist_in_config - 2]
-no reviewers are configured for repository
+no reviewers are configured for octocat/hello-world
 
 ---
