@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/cli/go-gh/v2"
@@ -91,6 +92,32 @@ func mustGetUserHomeDir() string {
 	return dir
 }
 
+func validateRepositoryArg(stderr io.Writer, repository string) bool {
+	if repository == "" {
+		fmt.Fprintln(stderr, "first argument must be repository in <owner>/<repository> format")
+
+		return false
+	}
+
+	if _, _, found := strings.Cut(repository, "/"); !found || strings.HasPrefix(repository, "http") {
+		fmt.Fprintln(stderr, "repository should be in the format of <owner>/<repository>")
+
+		return false
+	}
+
+	return true
+}
+
+func validatePullRequestArg(stderr io.Writer, pr string) bool {
+	if _, err := strconv.Atoi(pr); err != nil {
+		fmt.Fprintln(stderr, "second argument must be pull request number")
+
+		return false
+	}
+
+	return true
+}
+
 func run(args []string, stdout, stderr io.Writer) int {
 	cli := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
@@ -103,6 +130,10 @@ func run(args []string, stdout, stderr io.Writer) int {
 	repository := cli.Arg(0)
 	pr := cli.Arg(1)
 	url := buildPullRequestURL(repository, pr)
+
+	if !validateRepositoryArg(stderr, repository) || !validatePullRequestArg(stdout, pr) {
+		return 1
+	}
 
 	config, err := loadConfigFile(*configDir)
 

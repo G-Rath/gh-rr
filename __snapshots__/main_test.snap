@@ -28,11 +28,56 @@ yaml: unmarshal errors:
 
 ---
 
+[Test_run/pull_request_must_be_a_number - 1]
+second argument must be pull request number
+
+---
+
+[Test_run/pull_request_must_be_a_number - 2]
+
+---
+
+[Test_run/pull_request_must_be_provided_as_the_second_argument - 1]
+second argument must be pull request number
+
+---
+
+[Test_run/pull_request_must_be_provided_as_the_second_argument - 2]
+
+---
+
 [Test_run/repository_does_not_exist_in_config - 1]
 
 ---
 
 [Test_run/repository_does_not_exist_in_config - 2]
 no reviewers are configured for octocat/hello-world
+
+---
+
+[Test_run/repository_must_be_prefixed_with_owner - 1]
+
+---
+
+[Test_run/repository_must_be_prefixed_with_owner - 2]
+repository should be in the format of <owner>/<repository>
+
+---
+
+[Test_run/repository_must_be_provided_as_the_first_argument - 1]
+
+---
+
+[Test_run/repository_must_be_provided_as_the_first_argument - 2]
+first argument must be repository in <owner>/<repository> format
+
+---
+
+[Test_run/repository_should_not_be_a_url - 1]
+
+---
+
+[Test_run/repository_should_not_be_a_url - 2]
+repository should be in the format of <owner>/<repository>
 
 ---

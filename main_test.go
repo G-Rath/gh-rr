@@ -356,6 +356,46 @@ func Test_run(t *testing.T) {
 		exit int
 	}{
 		{
+			name: "repository must be provided as the first argument",
+			args: args{
+				args:   []string{},
+				config: "",
+			},
+			exit: 1,
+		},
+		{
+			name: "repository must be prefixed with owner",
+			args: args{
+				args:   []string{"hello-world"},
+				config: "",
+			},
+			exit: 1,
+		},
+		{
+			name: "repository should not be a url",
+			args: args{
+				args:   []string{"https://github.com/octocat/hello-world"},
+				config: "",
+			},
+			exit: 1,
+		},
+		{
+			name: "pull request must be provided as the second argument",
+			args: args{
+				args:   []string{"octocat/hello-world"},
+				config: "",
+			},
+			exit: 1,
+		},
+		{
+			name: "pull request must be a number",
+			args: args{
+				args:   []string{"octocat/hello-world", "abc"},
+				config: "",
+			},
+			exit: 1,
+		},
+		{
 			name: "config does not exist",
 			args: args{
 				args:   []string{"octocat/hello-world", "123"},
