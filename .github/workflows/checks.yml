@@ -24,11 +24,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out code
-        uses: actions/checkout@4
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
       - name: Set up Go
-        uses: actions/setup-go@5
+        uses: actions/setup-go@v5
         with:
           go-version-file: .go-version
           check-latest: true
