@@ -1,0 +1,61 @@
+output:
+  sort-results: true
+linters:
+  enable:
+    - gofmt
+    - goimports
+  # prettier-ignore
+  disable:
+    - tagliatelle      # we're parsing data from external sources
+    - varnamelen       # maybe later
+    - exhaustruct      # overkill
+    - forcetypeassert  # too hard
+    - interfacer       # deprecated
+    - golint           # deprecated
+    - scopelint        # deprecated
+    - maligned         # deprecated
+    - lll              # line length is hard
+    - godox            # to-do comments are fine
+    - godot            # comments are fine without full stops
+    - gomnd            # not every number is magic
+    - wsl              # disagree with, for now
+    - ireturn          # disagree with, sort of
+    - nonamedreturns   # they have their uses
+    - goconst          # not everything should be a constant
+    - goerr113         # maybe later
+    - wrapcheck        # needs to prove itself
+    - depguard         # overkill
+  presets:
+    - bugs
+    - comment
+    - error
+    - performance
+    - sql
+    - style
+    - test
+    - unused
+
+linters-settings:
+  gocritic:
+    disabled-checks:
+      - ifElseChain
+  revive:
+    rules:
+      - name: increment-decrement
+        disabled: true
+  nlreturn:
+    # Size of the block (including return statement that is still "OK")
+    # so no return split required.
+    # Default: 1
+    block-size: 2
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - goconst
+        - goerr113
+        - dupl
+    - path: main.go
+      linters:
+        - gochecknoglobals
