@@ -149,6 +149,7 @@ func Test_determineReviewers(t *testing.T) {
 	type args struct {
 		config     Config
 		repository string
+		group      string
 	}
 	tests := []struct {
 		name    string
@@ -160,11 +161,12 @@ func Test_determineReviewers(t *testing.T) {
 			name: "ErrRepositoryNotConfigured when the repository is not present",
 			args: args{
 				config: Config{
-					Repositories: map[string][]string{
-						"octocat/hello-sunshine": {"octocat"},
+					Repositories: map[string]map[string][]string{
+						"octocat/hello-world": {"default": []string{"octocat"}},
 					},
 				},
-				repository: "octocat/hello-world",
+				repository: "octocat/hello-sunshine",
+				group:      "default",
 			},
 			want:    []string{},
 			wantErr: ErrRepositoryNotConfigured,
@@ -173,11 +175,12 @@ func Test_determineReviewers(t *testing.T) {
 			name: "reviewers when the repository is present",
 			args: args{
 				config: Config{
-					Repositories: map[string][]string{
-						"octocat/hello-world": {"octocat"},
+					Repositories: map[string]map[string][]string{
+						"octocat/hello-world": {"default": []string{"octocat"}},
 					},
 				},
 				repository: "octocat/hello-world",
+				group:      "default",
 			},
 			want:    []string{"octocat"},
 			wantErr: nil,
@@ -188,7 +191,7 @@ func Test_determineReviewers(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := determineReviewers(tt.args.config, tt.args.repository)
+			got, err := determineReviewers(tt.args.config, tt.args.repository, tt.args.group)
 			if !errors.Is(err, tt.wantErr) {
 				t.Errorf("determineReviewers() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -248,12 +251,13 @@ func Test_parseConfig(t *testing.T) {
 				content: `
 					repositories:
 						octocat/hello-world:
-							- octocat
+							default:
+								- octocat
 				`,
 			},
 			want: Config{
-				Repositories: map[string][]string{
-					"octocat/hello-world": {"octocat"},
+				Repositories: map[string]map[string][]string{
+					"octocat/hello-world": {"default": []string{"octocat"}},
 				},
 			},
 			wantErr: false,
@@ -264,16 +268,18 @@ func Test_parseConfig(t *testing.T) {
 				content: `
 					repositories:
 						octocat/hello-world:
-							- octocat
+							default:
+							  - octocat
 						octocat/hello-sunshine:
-							- octodog
-							- octopus
+							default:
+							  - octodog
+							  - octopus
 				`,
 			},
 			want: Config{
-				Repositories: map[string][]string{
-					"octocat/hello-world":    {"octocat"},
-					"octocat/hello-sunshine": {"octodog", "octopus"},
+				Repositories: map[string]map[string][]string{
+					"octocat/hello-world":    {"default": []string{"octocat"}},
+					"octocat/hello-sunshine": {"default": []string{"octodog", "octopus"}},
 				},
 			},
 			wantErr: false,
@@ -283,14 +289,14 @@ func Test_parseConfig(t *testing.T) {
 			args: args{
 				content: `
 					repositories:
-						octocat/hello-world: ['octocat']
-						octocat/hello-sunshine: ['octodog', 'octopus']
+						octocat/hello-world: { default: ['octocat'] }
+						octocat/hello-sunshine: { default: ['octodog', 'octopus'] }
 				`,
 			},
 			want: Config{
-				Repositories: map[string][]string{
-					"octocat/hello-world":    {"octocat"},
-					"octocat/hello-sunshine": {"octodog", "octopus"},
+				Repositories: map[string]map[string][]string{
+					"octocat/hello-world":    {"default": []string{"octocat"}},
+					"octocat/hello-sunshine": {"default": []string{"octodog", "octopus"}},
 				},
 			},
 			wantErr: false,
@@ -303,14 +309,16 @@ func Test_parseConfig(t *testing.T) {
 						- octocat
 						- octodog
 					repositories:
-						octocat/hello-world: *shared
-						octocat/hello-sunshine: *shared
+						octocat/hello-world:
+							default: *shared
+						octocat/hello-sunshine:
+							default: *shared
 				`,
 			},
 			want: Config{
-				Repositories: map[string][]string{
-					"octocat/hello-world":    {"octocat", "octodog"},
-					"octocat/hello-sunshine": {"octocat", "octodog"},
+				Repositories: map[string]map[string][]string{
+					"octocat/hello-world":    {"default": []string{"octocat", "octodog"}},
+					"octocat/hello-sunshine": {"default": []string{"octocat", "octodog"}},
 				},
 			},
 			wantErr: false,
@@ -418,8 +426,23 @@ func Test_run(t *testing.T) {
 				config: `
 					repositories:
 						octocat/hello-sunshine:
-							- octodog
-							- octopus
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 1,
+		},
+		{
+			name: "group does not exist in config",
+			args: args{
+				args: []string{"--from", "does-not-exist", "octocat/hello-world", "123"},
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octodog
+								- octopus
 				`,
 			},
 			exit: 1,
@@ -431,10 +454,32 @@ func Test_run(t *testing.T) {
 				config: `
 					repositories:
 						octocat/hello-world:
-							- octocat
+							default:
+								- octocat
 						octocat/hello-sunshine:
-							- octodog
-							- octopus
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "explicit group",
+			args: args{
+				args: []string{"--from", "infra", "octocat/hello-world", "123"},
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octocat
+							infra:
+								- octodog
+								- octopus
+						octocat/hello-sunshine:
+							default:
+								- octodog
+								- octopus
 				`,
 			},
 			exit: 0,

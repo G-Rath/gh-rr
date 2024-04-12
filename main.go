@@ -15,8 +15,8 @@ import (
 )
 
 type Config struct {
-	Repositories map[string][]string `yaml:"repositories"`
-	Path         string              `yaml:""`
+	Repositories map[string]map[string][]string `yaml:"repositories"`
+	Path         string                         `yaml:""`
 }
 
 func parseConfig(file string) (Config, error) {
@@ -48,12 +48,17 @@ func loadConfigFile(dir string) (Config, error) {
 }
 
 var ErrRepositoryNotConfigured = errors.New("no reviewers are configured for repository")
+var ErrGroupNotConfigured = errors.New("repository is not configured with group")
 
-func determineReviewers(config Config, repository string) ([]string, error) {
-	reviewers, ok := config.Repositories[repository]
+func determineReviewers(config Config, repository string, group string) ([]string, error) {
+	if _, ok := config.Repositories[repository]; !ok {
+		return []string{}, ErrRepositoryNotConfigured
+	}
+
+	reviewers, ok := config.Repositories[repository][group]
 
 	if !ok {
-		return []string{}, ErrRepositoryNotConfigured
+		return []string{}, ErrGroupNotConfigured
 	}
 
 	return reviewers, nil
@@ -121,6 +126,7 @@ func validatePullRequestArg(stderr io.Writer, pr string) bool {
 func run(args []string, stdout, stderr io.Writer) int {
 	cli := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
+	group := cli.String("from", "default", "group of users to request review from")
 	configDir := cli.String("config-dir", mustGetUserHomeDir(), "directory to search for the configuration file")
 	isDryRun := cli.Bool("dry-run", false, "")
 
@@ -148,11 +154,13 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 
-	reviewers, err := determineReviewers(config, repository)
+	reviewers, err := determineReviewers(config, repository, *group)
 
 	if err != nil {
 		if errors.Is(err, ErrRepositoryNotConfigured) {
 			fmt.Fprintf(stderr, "no reviewers are configured for %s\n", repository)
+		} else if errors.Is(err, ErrGroupNotConfigured) {
+			fmt.Fprintf(stderr, "%s does not have a group named %s\n", repository, *group)
 		} else {
 			fmt.Fprintf(stderr, "%v\n", err)
 		}
