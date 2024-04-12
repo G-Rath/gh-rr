@@ -295,6 +295,26 @@ func Test_parseConfig(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "with aliases",
+			args: args{
+				content: `
+					shared: &shared
+						- octocat
+						- octodog
+					repositories:
+						octocat/hello-world: *shared
+						octocat/hello-sunshine: *shared
+				`,
+			},
+			want: Config{
+				Repositories: map[string][]string{
+					"octocat/hello-world":    {"octocat", "octodog"},
+					"octocat/hello-sunshine": {"octocat", "octodog"},
+				},
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		tt := tt
