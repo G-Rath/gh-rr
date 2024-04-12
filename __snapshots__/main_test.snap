@@ -4,7 +4,7 @@
 ---
 
 [Test_run/config_does_not_exist - 2]
-please create config file
+please create <tempdir>/gh-rr.yml to configure your repositories
 
 ---
 

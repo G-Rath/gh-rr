@@ -20,6 +20,57 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+// Attempts to normalize any file paths in the given `output` so that they can
+// be compared reliably regardless of the file path separator being used.
+//
+// Namely, escaped forward slashes are replaced with backslashes.
+func normalizeFilePaths(t *testing.T, output string) string {
+	t.Helper()
+
+	return strings.ReplaceAll(strings.ReplaceAll(output, "\\\\", "/"), "\\", "/")
+}
+
+// normalizeTempDirectory attempts to replace references to the temp directory
+// with "<tempdir>", to ensure tests pass across different OSs
+func normalizeTempDirectory(t *testing.T, str string) string {
+	t.Helper()
+
+	//nolint:gocritic // ensure that the directory doesn't end with a trailing slash
+	tempDir := normalizeFilePaths(t, filepath.Join(os.TempDir()))
+	re := regexp.MustCompile(tempDir + `/gh-rr-test-\d+`)
+
+	return re.ReplaceAllString(str, "<tempdir>")
+}
+
+// normalizeErrors attempts to replace error messages on alternative OSs with their
+// known linux equivalents, to ensure tests pass across different OSs
+func normalizeErrors(t *testing.T, str string) string {
+	t.Helper()
+
+	str = strings.ReplaceAll(str, "The filename, directory name, or volume label syntax is incorrect.", "no such file or directory")
+	str = strings.ReplaceAll(str, "The system cannot find the path specified.", "no such file or directory")
+	str = strings.ReplaceAll(str, "The system cannot find the file specified.", "no such file or directory")
+
+	return str
+}
+
+// normalizeStdStream applies a series of normalizes to the buffer from a std stream like stdout and stderr
+func normalizeStdStream(t *testing.T, std *bytes.Buffer) string {
+	t.Helper()
+
+	str := std.String()
+
+	for _, normalizer := range []func(t *testing.T, str string) string{
+		normalizeFilePaths,
+		normalizeTempDirectory,
+		normalizeErrors,
+	} {
+		str = normalizer(t, str)
+	}
+
+	return str
+}
+
 func dedent(t *testing.T, str string) string {
 	t.Helper()
 
@@ -364,6 +415,10 @@ func Test_parseConfig(t *testing.T) {
 				t.Errorf("parseConfig() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+
+			// these should be equal
+			tt.want.Path = f
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("parseConfig() got = %v, want %v", got, tt.want)
 			}
@@ -449,8 +504,8 @@ func Test_run(t *testing.T) {
 				t.Errorf("run() = %v, want %v", got, tt.exit)
 			}
 
-			snaps.MatchSnapshot(t, stdout.String())
-			snaps.MatchSnapshot(t, stderr.String())
+			snaps.MatchSnapshot(t, normalizeStdStream(t, stdout))
+			snaps.MatchSnapshot(t, normalizeStdStream(t, stderr))
 		})
 	}
 }

@@ -17,10 +17,11 @@ var ErrRepositoryConfigDoesNotExist = errors.New("no config exists for repositor
 
 type Config struct {
 	Repositories map[string][]string `yaml:"repositories"`
+	Path         string              `yaml:""`
 }
 
 func parseConfig(file string) (Config, error) {
-	var config Config
+	config := Config{Path: file}
 
 	out, err := os.ReadFile(file)
 
@@ -41,7 +42,7 @@ func loadConfigFile(dir string) (Config, error) {
 	file := filepath.Join(dir, "gh-rr.yml")
 
 	if _, err := os.Stat(file); err != nil {
-		return Config{}, err
+		return Config{Path: file}, err
 	}
 
 	return parseConfig(file)
@@ -109,7 +110,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			fmt.Fprintf(stderr, "please create config file\n")
+			// todo: this could probably be worded better
+			fmt.Fprintf(stderr, "please create %s to configure your repositories\n", config.Path)
 		} else {
 			fmt.Fprintf(stderr, "%v\n", err)
 		}
