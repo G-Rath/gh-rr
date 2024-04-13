@@ -505,13 +505,11 @@ func Test_run(t *testing.T) {
 			a = append(a, tt.args.args...)
 
 			var ghExecArgs []string
-			ghExecCalled := false
 
 			got := run(a, stdout, stderr, func(args ...string) (stdout, stderr string) {
 				t.Helper()
 
 				ghExecArgs = args
-				ghExecCalled = true
 
 				return tt.args.ghExec(args...)
 			})
@@ -522,10 +520,7 @@ func Test_run(t *testing.T) {
 
 			snaps.MatchSnapshot(t, normalizeStdStream(t, stdout))
 			snaps.MatchSnapshot(t, normalizeStdStream(t, stderr))
-
-			if ghExecCalled {
-				snaps.MatchJSON(t, ghExecArgs)
-			}
+			snaps.MatchJSON(t, ghExecArgs)
 		})
 	}
 }
