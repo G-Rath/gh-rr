@@ -8,6 +8,17 @@ please create <tempdir>/gh-rr.yml to configure your repositories
 
 ---
 
+[Test_run/explicit_group - 1]
+adding the following as reviewers to https://github.com/octocat/hello-world/pull/123
+  - octodog
+  - octopus
+
+---
+
+[Test_run/explicit_group - 2]
+
+---
+
 [Test_run/fulsome_case - 1]
 adding the following as reviewers to https://github.com/octocat/hello-world/pull/123
   - octocat
@@ -15,6 +26,15 @@ adding the following as reviewers to https://github.com/octocat/hello-world/pull
 ---
 
 [Test_run/fulsome_case - 2]
+
+---
+
+[Test_run/group_does_not_exist_in_config - 1]
+
+---
+
+[Test_run/group_does_not_exist_in_config - 2]
+octocat/hello-world does not have a group named does-not-exist
 
 ---
 
