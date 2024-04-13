@@ -146,3 +146,19 @@ func writeTempConfigFile(t *testing.T, content string) string {
 
 	return f.Name()
 }
+
+// expectNoCallToGh fails the test if it is called
+func expectNoCallToGh(t *testing.T, _ ...string) (string, string) {
+	t.Helper()
+
+	t.Errorf("unexpected call to gh")
+
+	return "", ""
+}
+
+// expectCallToGh acts as a successful call to gh.Exec
+func expectCallToGh(t *testing.T, _ ...string) (string, string) {
+	t.Helper()
+
+	return "https://github.com/octocat/hello-world", ""
+}

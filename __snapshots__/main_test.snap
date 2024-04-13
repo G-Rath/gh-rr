@@ -8,8 +8,18 @@ please create <tempdir>/gh-rr.yml to configure your repositories
 
 ---
 
-[Test_run/explicit_group - 1]
+[Test_run/dry_run - 1]
 would have used `gh pr edit` to request reviews from:
+  - octocat
+
+---
+
+[Test_run/dry_run - 2]
+
+---
+
+[Test_run/explicit_group - 1]
+requested reviews on https://github.com/octocat/hello-world from:
   - octodog
   - octopus
 
@@ -19,14 +29,40 @@ would have used `gh pr edit` to request reviews from:
 
 ---
 
+[Test_run/explicit_group - 3]
+[
+ "pr",
+ "edit",
+ "123",
+ "--repo",
+ "octocat/hello-world",
+ "--add-reviewer",
+ "octodog",
+ "--add-reviewer",
+ "octopus"
+]
+---
+
 [Test_run/fulsome_case - 1]
-would have used `gh pr edit` to request reviews from:
+requested reviews on https://github.com/octocat/hello-world from:
   - octocat
 
 ---
 
 [Test_run/fulsome_case - 2]
 
+---
+
+[Test_run/fulsome_case - 3]
+[
+ "pr",
+ "edit",
+ "123",
+ "--repo",
+ "octocat/hello-world",
+ "--add-reviewer",
+ "octocat"
+]
 ---
 
 [Test_run/group_does_not_exist_in_config - 1]
@@ -100,4 +136,26 @@ please create <tempdir>/gh-rr.yml to configure your repositories
 [Test_run/target_is_not_required - 2]
 please create <tempdir>/gh-rr.yml to configure your repositories
 
+---
+
+[Test_run/when_ghExec_fails - 1]
+
+could not add reviewers: no pull requests found for branch "update-readme"
+
+---
+
+[Test_run/when_ghExec_fails - 2]
+
+---
+
+[Test_run/when_ghExec_fails - 3]
+[
+ "pr",
+ "edit",
+ "",
+ "--repo",
+ "octocat/hello-world",
+ "--add-reviewer",
+ "octocat"
+]
 ---
