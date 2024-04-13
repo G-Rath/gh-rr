@@ -73,8 +73,8 @@ func buildAddReviewersArgs(repository string, target string, reviewers []string)
 	return args
 }
 
-func addReviewers(repository string, pr string, reviewers []string) (string, string) {
-	stdout, stderr, _ := gh.Exec(buildAddReviewersArgs(repository, pr, reviewers)...)
+func addReviewers(repository string, target string, reviewers []string) (string, string) {
+	stdout, stderr, _ := gh.Exec(buildAddReviewersArgs(repository, target, reviewers)...)
 
 	return strings.TrimSpace(stdout.String()), stderr.String()
 }

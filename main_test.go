@@ -21,7 +21,7 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 
 	type args struct {
 		repository string
-		pr         string
+		target     string
 		reviewers  []string
 	}
 	tests := []struct {
@@ -33,7 +33,7 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 			name: "with everything empty",
 			args: args{
 				repository: "",
-				pr:         "",
+				target:     "",
 				reviewers:  nil,
 			},
 			want: []string{
@@ -45,7 +45,7 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 			name: "with no reviewers",
 			args: args{
 				repository: "octocat/hello-world",
-				pr:         "123",
+				target:     "123",
 				reviewers:  nil,
 			},
 			want: []string{
@@ -57,7 +57,7 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 			name: "with one reviewer",
 			args: args{
 				repository: "octocat/hello-world",
-				pr:         "123",
+				target:     "123",
 				reviewers:  []string{"octocat"},
 			},
 			want: []string{
@@ -70,7 +70,7 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 			name: "with some reviewers",
 			args: args{
 				repository: "octocat/hello-world",
-				pr:         "123",
+				target:     "123",
 				reviewers:  []string{"octocat", "octodog", "octopus"},
 			},
 			want: []string{
@@ -87,7 +87,7 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			if got := buildAddReviewersArgs(tt.args.repository, tt.args.pr, tt.args.reviewers); !reflect.DeepEqual(got, tt.want) {
+			if got := buildAddReviewersArgs(tt.args.repository, tt.args.target, tt.args.reviewers); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("buildAddReviewersArgs() = %v, want %v", got, tt.want)
 			}
 		})
@@ -339,17 +339,17 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "pull request must be a number (when provided)",
+			name: "target is not required",
 			args: args{
-				args:   []string{"octocat/hello-world", "abc"},
+				args:   []string{"octocat/hello-world"},
 				config: "",
 			},
 			exit: 1,
 		},
 		{
-			name: "target is not required",
+			name: "target does not have to be a number",
 			args: args{
-				args:   []string{"octocat/hello-world"},
+				args:   []string{"octocat/hello-world", "abc"},
 				config: "",
 			},
 			exit: 1,
