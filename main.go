@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/cli/go-gh/v2"
@@ -64,12 +63,8 @@ func determineReviewers(config Config, repository string, group string) ([]strin
 	return reviewers, nil
 }
 
-func buildPullRequestURL(repository string, pr string) string {
-	return fmt.Sprintf("https://github.com/%s/pull/%s", repository, pr)
-}
-
-func buildAddReviewersArgs(repository string, pr string, reviewers []string) []string {
-	args := []string{"pr", "edit", pr, "--repo", repository}
+func buildAddReviewersArgs(repository string, target string, reviewers []string) []string {
+	args := []string{"pr", "edit", target, "--repo", repository}
 
 	for _, reviewer := range reviewers {
 		args = append(args, "--add-reviewer", reviewer)
@@ -113,20 +108,6 @@ func validateRepositoryArg(stderr io.Writer, repository string) bool {
 	return true
 }
 
-func validatePullRequestArg(stderr io.Writer, pr string) bool {
-	if pr == "" {
-		return true
-	}
-
-	if _, err := strconv.Atoi(pr); err != nil {
-		fmt.Fprintln(stderr, "second argument must be pull request number")
-
-		return false
-	}
-
-	return true
-}
-
 func run(args []string, stdout, stderr io.Writer) int {
 	cli := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
@@ -138,9 +119,9 @@ func run(args []string, stdout, stderr io.Writer) int {
 	_ = cli.Parse(args)
 
 	repository := cli.Arg(0)
-	pr := cli.Arg(1)
+	target := cli.Arg(1)
 
-	if !validateRepositoryArg(stderr, repository) || !validatePullRequestArg(stderr, pr) {
+	if !validateRepositoryArg(stderr, repository) {
 		return 1
 	}
 
@@ -174,7 +155,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	if *isDryRun {
 		fmt.Fprintf(stdout, "would have used `gh pr edit` to request reviews from:\n")
 	} else {
-		url, errMsg := addReviewers(repository, pr, reviewers)
+		url, errMsg := addReviewers(repository, target, reviewers)
 
 		if errMsg != "" {
 			fmt.Fprintf(stdout, "\ncould not add reviewers: %s\n", strings.TrimSpace(errMsg))

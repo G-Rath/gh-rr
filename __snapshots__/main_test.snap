@@ -48,21 +48,12 @@ yaml: unmarshal errors:
 
 ---
 
-[Test_run/pull_request_is_not_required - 1]
-
----
-
-[Test_run/pull_request_is_not_required - 2]
-please create <tempdir>/gh-rr.yml to configure your repositories
-
----
-
 [Test_run/pull_request_must_be_a_number_(when_provided) - 1]
 
 ---
 
 [Test_run/pull_request_must_be_a_number_(when_provided) - 2]
-second argument must be pull request number
+please create <tempdir>/gh-rr.yml to configure your repositories
 
 ---
 
@@ -99,5 +90,14 @@ first argument must be repository in <owner>/<repository> format
 
 [Test_run/repository_should_not_be_a_url - 2]
 repository should be in the format of <owner>/<repository>
+
+---
+
+[Test_run/target_is_not_required - 1]
+
+---
+
+[Test_run/target_is_not_required - 2]
+please create <tempdir>/gh-rr.yml to configure your repositories
 
 ---

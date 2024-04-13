@@ -94,55 +94,6 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 	}
 }
 
-func Test_buildPullRequestURL(t *testing.T) {
-	t.Parallel()
-
-	type args struct {
-		repository string
-		pr         string
-	}
-	tests := []struct {
-		name string
-		args args
-		want string
-	}{
-		{
-			name: "with everything empty",
-			args: args{
-				repository: "",
-				pr:         "",
-			},
-			want: "https://github.com//pull/",
-		},
-		{
-			name: "with a repository",
-			args: args{
-				repository: "octocat/hello-world",
-				pr:         "",
-			},
-			want: "https://github.com/octocat/hello-world/pull/",
-		},
-		{
-			name: "with everything provided",
-			args: args{
-				repository: "octocat/hello-world",
-				pr:         "123",
-			},
-			want: "https://github.com/octocat/hello-world/pull/123",
-		},
-	}
-	for _, tt := range tests {
-		tt := tt
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			if got := buildPullRequestURL(tt.args.repository, tt.args.pr); got != tt.want {
-				t.Errorf("buildPullRequestURL() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func Test_determineReviewers(t *testing.T) {
 	t.Parallel()
 
@@ -396,7 +347,7 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "pull request is not required",
+			name: "target is not required",
 			args: args{
 				args:   []string{"octocat/hello-world"},
 				config: "",
