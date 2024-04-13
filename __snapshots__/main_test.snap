@@ -29,6 +29,20 @@ requested reviews on https://github.com/octocat/hello-world from:
 
 ---
 
+[Test_run/explicit_group - 3]
+[
+ "pr",
+ "edit",
+ "123",
+ "--repo",
+ "octocat/hello-world",
+ "--add-reviewer",
+ "octodog",
+ "--add-reviewer",
+ "octopus"
+]
+---
+
 [Test_run/fulsome_case - 1]
 requested reviews on https://github.com/octocat/hello-world from:
   - octocat
@@ -37,6 +51,18 @@ requested reviews on https://github.com/octocat/hello-world from:
 
 [Test_run/fulsome_case - 2]
 
+---
+
+[Test_run/fulsome_case - 3]
+[
+ "pr",
+ "edit",
+ "123",
+ "--repo",
+ "octocat/hello-world",
+ "--add-reviewer",
+ "octocat"
+]
 ---
 
 [Test_run/group_does_not_exist_in_config - 1]
@@ -120,4 +146,16 @@ could not add reviewers: no pull requests found for branch "update-readme"
 
 [Test_run/when_ghExec_fails - 2]
 
+---
+
+[Test_run/when_ghExec_fails - 3]
+[
+ "pr",
+ "edit",
+ "",
+ "--repo",
+ "octocat/hello-world",
+ "--add-reviewer",
+ "octocat"
+]
 ---

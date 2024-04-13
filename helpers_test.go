@@ -147,6 +147,7 @@ func writeTempConfigFile(t *testing.T, content string) string {
 	return f.Name()
 }
 
+// expectNoCallToGh fails the test if it is called
 func expectNoCallToGh(t *testing.T, _ ...string) (string, string) {
 	t.Helper()
 
@@ -155,6 +156,7 @@ func expectNoCallToGh(t *testing.T, _ ...string) (string, string) {
 	return "", ""
 }
 
+// expectCallToGh acts as a successful call to gh.Exec
 func expectCallToGh(t *testing.T, _ ...string) (string, string) {
 	t.Helper()
 

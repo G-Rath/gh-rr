@@ -504,8 +504,14 @@ func Test_run(t *testing.T) {
 			a := []string{"--config-dir", configDir}
 			a = append(a, tt.args.args...)
 
+			var ghExecArgs []string
+			ghExecCalled := false
+
 			got := run(a, stdout, stderr, func(args ...string) (stdout, stderr string) {
 				t.Helper()
+
+				ghExecArgs = args
+				ghExecCalled = true
 
 				return tt.args.ghExec(t, args...)
 			})
@@ -516,6 +522,10 @@ func Test_run(t *testing.T) {
 
 			snaps.MatchSnapshot(t, normalizeStdStream(t, stdout))
 			snaps.MatchSnapshot(t, normalizeStdStream(t, stderr))
+
+			if ghExecCalled {
+				snaps.MatchJSON(t, ghExecArgs)
+			}
 		})
 	}
 }
