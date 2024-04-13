@@ -388,17 +388,17 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "pull request must be provided as the second argument",
+			name: "pull request must be a number (when provided)",
 			args: args{
-				args:   []string{"octocat/hello-world"},
+				args:   []string{"octocat/hello-world", "abc"},
 				config: "",
 			},
 			exit: 1,
 		},
 		{
-			name: "pull request must be a number",
+			name: "pull request is not required",
 			args: args{
-				args:   []string{"octocat/hello-world", "abc"},
+				args:   []string{"octocat/hello-world"},
 				config: "",
 			},
 			exit: 1,

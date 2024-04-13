@@ -78,10 +78,10 @@ func buildAddReviewersArgs(repository string, pr string, reviewers []string) []s
 	return args
 }
 
-func addReviewers(repository string, pr string, reviewers []string) string {
-	_, stderr, _ := gh.Exec(buildAddReviewersArgs(repository, pr, reviewers)...)
+func addReviewers(repository string, pr string, reviewers []string) (string, string) {
+	stdout, stderr, _ := gh.Exec(buildAddReviewersArgs(repository, pr, reviewers)...)
 
-	return stderr.String()
+	return strings.TrimSpace(stdout.String()), stderr.String()
 }
 
 func mustGetUserHomeDir() string {
@@ -114,6 +114,10 @@ func validateRepositoryArg(stderr io.Writer, repository string) bool {
 }
 
 func validatePullRequestArg(stderr io.Writer, pr string) bool {
+	if pr == "" {
+		return true
+	}
+
 	if _, err := strconv.Atoi(pr); err != nil {
 		fmt.Fprintln(stderr, "second argument must be pull request number")
 
@@ -135,7 +139,6 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 	repository := cli.Arg(0)
 	pr := cli.Arg(1)
-	url := buildPullRequestURL(repository, pr)
 
 	if !validateRepositoryArg(stderr, repository) || !validatePullRequestArg(stderr, pr) {
 		return 1
@@ -168,20 +171,22 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 
-	fmt.Fprintf(stdout, "adding the following as reviewers to %s\n", url)
+	if *isDryRun {
+		fmt.Fprintf(stdout, "would have used `gh pr edit` to request reviews from:\n")
+	} else {
+		url, errMsg := addReviewers(repository, pr, reviewers)
 
-	for _, reviewer := range reviewers {
-		fmt.Fprintf(stdout, "  - %s\n", reviewer)
-	}
-
-	if !*isDryRun {
-		out := addReviewers(repository, pr, reviewers)
-
-		if out != "" {
-			fmt.Fprintf(stdout, "\ncould not add reviewers: %s\n", strings.TrimSpace(out))
+		if errMsg != "" {
+			fmt.Fprintf(stdout, "\ncould not add reviewers: %s\n", strings.TrimSpace(errMsg))
 
 			return 1
 		}
+
+		fmt.Fprintf(stdout, "requested reviews on %s from:\n", url)
+	}
+
+	for _, reviewer := range reviewers {
+		fmt.Fprintf(stdout, "  - %s\n", reviewer)
 	}
 
 	return 0

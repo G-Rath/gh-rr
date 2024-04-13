@@ -31,8 +31,19 @@ repositories:
 Then start requesting reviewers on your pull requests:
 
 ```shell
+# will infer the pull request to target based on the current branch
+gh rr g-rath/my-awesome-app
+
+# will infer the pull request based on the named branch
+gh rr g-rath/my-awesome-app my-feature
+
+# will target the specific pull request
 gh rr g-rath/my-awesome-app 123
 ```
+
+Under the hood this extension uses
+[`gh pr edit`](https://cli.github.com/manual/gh_pr_edit) to add reviewers, with
+the second argument being provided as that commands first argument.
 
 You can specify specific groups using `--from`:
 
