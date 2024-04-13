@@ -137,7 +137,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	pr := cli.Arg(1)
 	url := buildPullRequestURL(repository, pr)
 
-	if !validateRepositoryArg(stderr, repository) || !validatePullRequestArg(stdout, pr) {
+	if !validateRepositoryArg(stderr, repository) || !validatePullRequestArg(stderr, pr) {
 		return 1
 	}
 

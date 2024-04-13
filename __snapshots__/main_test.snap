@@ -49,20 +49,20 @@ yaml: unmarshal errors:
 ---
 
 [Test_run/pull_request_must_be_a_number - 1]
-second argument must be pull request number
 
 ---
 
 [Test_run/pull_request_must_be_a_number - 2]
-
----
-
-[Test_run/pull_request_must_be_provided_as_the_second_argument - 1]
 second argument must be pull request number
 
 ---
 
+[Test_run/pull_request_must_be_provided_as_the_second_argument - 1]
+
+---
+
 [Test_run/pull_request_must_be_provided_as_the_second_argument - 2]
+second argument must be pull request number
 
 ---
 
