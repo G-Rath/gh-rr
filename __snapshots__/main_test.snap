@@ -111,3 +111,13 @@ please create <tempdir>/gh-rr.yml to configure your repositories
 please create <tempdir>/gh-rr.yml to configure your repositories
 
 ---
+
+[Test_run/when_ghExec_fails - 1]
+
+could not add reviewers: no pull requests found for branch "update-readme"
+
+---
+
+[Test_run/when_ghExec_fails - 2]
+
+---
