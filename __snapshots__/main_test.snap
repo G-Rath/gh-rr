@@ -19,7 +19,7 @@ would have used `gh pr edit` to request reviews from:
 ---
 
 [Test_run/explicit_group - 1]
-requested reviews on https://github.com/octocat/hello-world from:
+requested reviews on https://github.com/octocat/hello-world/pull/123 from:
   - octodog
   - octopus
 
@@ -44,8 +44,9 @@ requested reviews on https://github.com/octocat/hello-world from:
 ---
 
 [Test_run/fulsome_case - 1]
-requested reviews on https://github.com/octocat/hello-world from:
-  - octocat
+requested reviews on https://github.com/octocat/hello-sunshine/pull/123 from:
+  - octodog
+  - octopus
 
 ---
 
@@ -59,9 +60,11 @@ requested reviews on https://github.com/octocat/hello-world from:
  "edit",
  "123",
  "--repo",
- "octocat/hello-world",
+ "octocat/hello-sunshine",
  "--add-reviewer",
- "octocat"
+ "octodog",
+ "--add-reviewer",
+ "octopus"
 ]
 ---
 
