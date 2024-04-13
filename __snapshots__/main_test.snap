@@ -8,8 +8,18 @@ please create <tempdir>/gh-rr.yml to configure your repositories
 
 ---
 
-[Test_run/explicit_group - 1]
+[Test_run/dry_run - 1]
 would have used `gh pr edit` to request reviews from:
+  - octocat
+
+---
+
+[Test_run/dry_run - 2]
+
+---
+
+[Test_run/explicit_group - 1]
+requested reviews on https://github.com/octocat/hello-world from:
   - octodog
   - octopus
 
@@ -20,7 +30,7 @@ would have used `gh pr edit` to request reviews from:
 ---
 
 [Test_run/fulsome_case - 1]
-would have used `gh pr edit` to request reviews from:
+requested reviews on https://github.com/octocat/hello-world from:
   - octocat
 
 ---

@@ -73,12 +73,6 @@ func buildAddReviewersArgs(repository string, target string, reviewers []string)
 	return args
 }
 
-func addReviewers(repository string, target string, reviewers []string) (string, string) {
-	stdout, stderr, _ := gh.Exec(buildAddReviewersArgs(repository, target, reviewers)...)
-
-	return strings.TrimSpace(stdout.String()), stderr.String()
-}
-
 func mustGetUserHomeDir() string {
 	dir, err := os.UserHomeDir()
 
@@ -108,7 +102,10 @@ func validateRepositoryArg(stderr io.Writer, repository string) bool {
 	return true
 }
 
-func run(args []string, stdout, stderr io.Writer) int {
+// ghExecutor invokes a gh command in a subprocess and captures the output and error streams
+type ghExecutor = func(args ...string) (stdout, stderr string)
+
+func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 	cli := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
 	group := cli.String("from", "default", "group of users to request review from")
@@ -155,7 +152,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	if *isDryRun {
 		fmt.Fprintf(stdout, "would have used `gh pr edit` to request reviews from:\n")
 	} else {
-		url, errMsg := addReviewers(repository, target, reviewers)
+		url, errMsg := ghExec(buildAddReviewersArgs(repository, target, reviewers)...)
 
 		if errMsg != "" {
 			fmt.Fprintf(stdout, "\ncould not add reviewers: %s\n", strings.TrimSpace(errMsg))
@@ -174,5 +171,9 @@ func run(args []string, stdout, stderr io.Writer) int {
 }
 
 func main() {
-	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr))
+	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr, func(args ...string) (string, string) {
+		stdout, stderr, _ := gh.Exec(args...)
+
+		return strings.TrimSpace(stdout.String()), stderr.String()
+	}))
 }

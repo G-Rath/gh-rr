@@ -341,7 +341,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "target is not required",
 			args: args{
-				args:   []string{"octocat/hello-world"},
+				args:   []string{"octocat/hello-world", "abc"},
 				config: "",
 			},
 			exit: 1,
@@ -349,7 +349,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "target does not have to be a number",
 			args: args{
-				args:   []string{"octocat/hello-world", "abc"},
+				args:   []string{"octocat/hello-world"},
 				config: "",
 			},
 			exit: 1,
@@ -416,6 +416,23 @@ func Test_run(t *testing.T) {
 			exit: 0,
 		},
 		{
+			name: "dry run",
+			args: args{
+				args: []string{"--dry-run", "octocat/hello-world", "123"},
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octocat
+						octocat/hello-sunshine:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
 			name: "explicit group",
 			args: args{
 				args: []string{"--from", "infra", "octocat/hello-world", "123"},
@@ -446,10 +463,15 @@ func Test_run(t *testing.T) {
 			stdout := &bytes.Buffer{}
 			stderr := &bytes.Buffer{}
 
-			a := []string{"--dry-run", "--config-dir", configDir}
+			a := []string{"--config-dir", configDir}
 			a = append(a, tt.args.args...)
 
-			got := run(a, stdout, stderr)
+			got := run(a, stdout, stderr, func(args ...string) (stdout, stderr string) {
+				t.Helper()
+
+				return "https://github.com/octocat/hello-world", ""
+			})
+
 			if got != tt.exit {
 				t.Errorf("run() = %v, want %v", got, tt.exit)
 			}
@@ -466,7 +488,13 @@ func Test_run_WithNoHomeVar(t *testing.T) {
 
 	defer func() { _ = recover() }()
 
-	run([]string{}, &bytes.Buffer{}, &bytes.Buffer{})
+	run([]string{}, &bytes.Buffer{}, &bytes.Buffer{}, func(args ...string) (stdout, stderr string) {
+		t.Helper()
+
+		t.Fatalf("unexpected call to gh")
+
+		return "", ""
+	})
 
 	t.Errorf("function did not panic when home directory could not be found")
 }
