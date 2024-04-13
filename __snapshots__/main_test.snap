@@ -9,7 +9,7 @@ please create <tempdir>/gh-rr.yml to configure your repositories
 ---
 
 [Test_run/explicit_group - 1]
-adding the following as reviewers to https://github.com/octocat/hello-world/pull/123
+would have used `gh pr edit` to request reviews from:
   - octodog
   - octopus
 
@@ -20,7 +20,7 @@ adding the following as reviewers to https://github.com/octocat/hello-world/pull
 ---
 
 [Test_run/fulsome_case - 1]
-adding the following as reviewers to https://github.com/octocat/hello-world/pull/123
+would have used `gh pr edit` to request reviews from:
   - octocat
 
 ---
@@ -45,24 +45,6 @@ octocat/hello-world does not have a group named does-not-exist
 [Test_run/invalid_config - 2]
 yaml: unmarshal errors:
   line 1: cannot unmarshal !!! `` into main.Config
-
----
-
-[Test_run/pull_request_must_be_a_number - 1]
-
----
-
-[Test_run/pull_request_must_be_a_number - 2]
-second argument must be pull request number
-
----
-
-[Test_run/pull_request_must_be_provided_as_the_second_argument - 1]
-
----
-
-[Test_run/pull_request_must_be_provided_as_the_second_argument - 2]
-second argument must be pull request number
 
 ---
 
@@ -99,5 +81,23 @@ first argument must be repository in <owner>/<repository> format
 
 [Test_run/repository_should_not_be_a_url - 2]
 repository should be in the format of <owner>/<repository>
+
+---
+
+[Test_run/target_does_not_have_to_be_a_number - 1]
+
+---
+
+[Test_run/target_does_not_have_to_be_a_number - 2]
+please create <tempdir>/gh-rr.yml to configure your repositories
+
+---
+
+[Test_run/target_is_not_required - 1]
+
+---
+
+[Test_run/target_is_not_required - 2]
+please create <tempdir>/gh-rr.yml to configure your repositories
 
 ---

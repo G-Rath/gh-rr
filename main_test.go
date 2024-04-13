@@ -21,7 +21,7 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 
 	type args struct {
 		repository string
-		pr         string
+		target     string
 		reviewers  []string
 	}
 	tests := []struct {
@@ -33,7 +33,7 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 			name: "with everything empty",
 			args: args{
 				repository: "",
-				pr:         "",
+				target:     "",
 				reviewers:  nil,
 			},
 			want: []string{
@@ -45,7 +45,7 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 			name: "with no reviewers",
 			args: args{
 				repository: "octocat/hello-world",
-				pr:         "123",
+				target:     "123",
 				reviewers:  nil,
 			},
 			want: []string{
@@ -57,7 +57,7 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 			name: "with one reviewer",
 			args: args{
 				repository: "octocat/hello-world",
-				pr:         "123",
+				target:     "123",
 				reviewers:  []string{"octocat"},
 			},
 			want: []string{
@@ -70,7 +70,7 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 			name: "with some reviewers",
 			args: args{
 				repository: "octocat/hello-world",
-				pr:         "123",
+				target:     "123",
 				reviewers:  []string{"octocat", "octodog", "octopus"},
 			},
 			want: []string{
@@ -87,57 +87,8 @@ func Test_buildAddReviewersArgs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			if got := buildAddReviewersArgs(tt.args.repository, tt.args.pr, tt.args.reviewers); !reflect.DeepEqual(got, tt.want) {
+			if got := buildAddReviewersArgs(tt.args.repository, tt.args.target, tt.args.reviewers); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("buildAddReviewersArgs() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_buildPullRequestURL(t *testing.T) {
-	t.Parallel()
-
-	type args struct {
-		repository string
-		pr         string
-	}
-	tests := []struct {
-		name string
-		args args
-		want string
-	}{
-		{
-			name: "with everything empty",
-			args: args{
-				repository: "",
-				pr:         "",
-			},
-			want: "https://github.com//pull/",
-		},
-		{
-			name: "with a repository",
-			args: args{
-				repository: "octocat/hello-world",
-				pr:         "",
-			},
-			want: "https://github.com/octocat/hello-world/pull/",
-		},
-		{
-			name: "with everything provided",
-			args: args{
-				repository: "octocat/hello-world",
-				pr:         "123",
-			},
-			want: "https://github.com/octocat/hello-world/pull/123",
-		},
-	}
-	for _, tt := range tests {
-		tt := tt
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			if got := buildPullRequestURL(tt.args.repository, tt.args.pr); got != tt.want {
-				t.Errorf("buildPullRequestURL() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -388,7 +339,7 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "pull request must be provided as the second argument",
+			name: "target is not required",
 			args: args{
 				args:   []string{"octocat/hello-world"},
 				config: "",
@@ -396,7 +347,7 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "pull request must be a number",
+			name: "target does not have to be a number",
 			args: args{
 				args:   []string{"octocat/hello-world", "abc"},
 				config: "",
