@@ -60,3 +60,19 @@ You can also use the `--from` flag to target alternative reviewer groups:
 ```shell
 gh rr --from infra
 ```
+
+## Why not use [CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) or [GitHub teams](https://docs.github.com/en/organizations/organizing-members-into-teams/managing-code-review-settings-for-your-team)?
+
+Both of these can be used to achieve a similar result as this extension, but
+they're not entirely equivalent: team-focused reviews generally dismiss the team
+review when a single member of that team submits their review, and automatic
+review assignment has a limit of up to 7 people (plus, it skips people who set
+their status to "busy" - while well intended, it assumes everyone diligently
+updates their status).
+
+While you can use CODEOWNERS to work around this by specifying users instead of
+teams, that means you then need to do a commit to update the file (which is
+particularly annoying when you're using branches for deployments), and it only
+applies at the file level rather than the change level (e.g. you might make an
+update to a section of your readme that relates to infrastructure, so should be
+reviewed by your platforms team)
