@@ -13,7 +13,7 @@ null
 ---
 
 [Test_run/dry_run - 1]
-would have used `gh pr edit` to request reviews from:
+would have used `gh pr edit --repo octocat/hello-world` to request reviews from:
   - octocat
 
 ---

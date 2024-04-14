@@ -160,7 +160,7 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 	}
 
 	if *isDryRun {
-		fmt.Fprintf(stdout, "would have used `gh pr edit` to request reviews from:\n")
+		fmt.Fprintf(stdout, "would have used `gh pr edit --repo %s` to request reviews from:\n", repo)
 	} else {
 		url, errMsg := ghExec(buildAddReviewersArgs(repo, target, reviewers)...)
 
