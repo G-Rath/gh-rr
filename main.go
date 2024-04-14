@@ -86,14 +86,14 @@ func mustGetUserHomeDir() string {
 	return dir
 }
 
-func validateRepositoryArg(stderr io.Writer, repository string) bool {
-	if repository == "" {
-		fmt.Fprintln(stderr, "first argument must be repository in <owner>/<repository> format")
+func validateRepositoryFlag(stderr io.Writer, repo string) bool {
+	if repo == "" {
+		fmt.Fprintln(stderr, "--repo flag is required and must be in <owner>/<repository> format")
 
 		return false
 	}
 
-	if _, _, found := strings.Cut(repository, "/"); !found || strings.HasPrefix(repository, "http") {
+	if _, _, found := strings.Cut(repo, "/"); !found || strings.HasPrefix(repo, "http") {
 		fmt.Fprintln(stderr, "repository should be in the format of <owner>/<repository>")
 
 		return false
@@ -108,6 +108,7 @@ type ghExecutor = func(args ...string) (stdout, stderr string)
 func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 	cli := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
+	repo := cli.String("repo", "", "select another repository using the [HOST/]OWNER/REPO format")
 	group := cli.String("from", "default", "group of users to request review from")
 	configDir := cli.String("config-dir", mustGetUserHomeDir(), "directory to search for the configuration file")
 	isDryRun := cli.Bool("dry-run", false, "")
@@ -115,10 +116,9 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 	// cli is set for ExitOnError so this will never return an error
 	_ = cli.Parse(args)
 
-	repository := cli.Arg(0)
-	target := cli.Arg(1)
+	target := cli.Arg(0)
 
-	if !validateRepositoryArg(stderr, repository) {
+	if !validateRepositoryFlag(stderr, *repo) {
 		return 1
 	}
 
@@ -135,13 +135,13 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 		return 1
 	}
 
-	reviewers, err := determineReviewers(config, repository, *group)
+	reviewers, err := determineReviewers(config, *repo, *group)
 
 	if err != nil {
 		if errors.Is(err, ErrRepositoryNotConfigured) {
-			fmt.Fprintf(stderr, "no reviewers are configured for %s\n", repository)
+			fmt.Fprintf(stderr, "no reviewers are configured for %s\n", *repo)
 		} else if errors.Is(err, ErrGroupNotConfigured) {
-			fmt.Fprintf(stderr, "%s does not have a group named %s\n", repository, *group)
+			fmt.Fprintf(stderr, "%s does not have a group named %s\n", *repo, *group)
 		} else {
 			fmt.Fprintf(stderr, "%v\n", err)
 		}
@@ -152,7 +152,7 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 	if *isDryRun {
 		fmt.Fprintf(stdout, "would have used `gh pr edit` to request reviews from:\n")
 	} else {
-		url, errMsg := ghExec(buildAddReviewersArgs(repository, target, reviewers)...)
+		url, errMsg := ghExec(buildAddReviewersArgs(*repo, target, reviewers)...)
 
 		if errMsg != "" {
 			fmt.Fprintf(stdout, "\ncould not add reviewers: %s\n", strings.TrimSpace(errMsg))

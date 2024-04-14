@@ -316,7 +316,7 @@ func Test_run(t *testing.T) {
 		exit int
 	}{
 		{
-			name: "repository must be provided as the first argument",
+			name: "when the --repo flag is not provided",
 			args: args{
 				args:   []string{},
 				ghExec: expectNoCallToGh(t),
@@ -325,45 +325,57 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "repository must be prefixed with owner",
+			name: "when --repo is not prefixed with the owner",
 			args: args{
-				args:   []string{"hello-world"},
+				args:   []string{"--repo", "hello-world"},
 				ghExec: expectNoCallToGh(t),
 				config: "",
 			},
 			exit: 1,
 		},
 		{
-			name: "repository should not be a url",
+			name: "when --repo is a url",
 			args: args{
-				args:   []string{"https://github.com/octocat/hello-world"},
+				args:   []string{"--repo", "https://github.com/octocat/hello-world"},
 				ghExec: expectNoCallToGh(t),
 				config: "",
 			},
 			exit: 1,
 		},
 		{
-			name: "target is not required",
+			name: "when no arguments are provided",
 			args: args{
-				args:   []string{"octocat/hello-world", "abc"},
-				ghExec: expectCallToGh(t, "octocat/hello-world", "abc"),
-				config: "",
-			},
-			exit: 1,
-		},
-		{
-			name: "target does not have to be a number",
-			args: args{
-				args:   []string{"octocat/hello-world"},
+				args:   []string{"--repo", "octocat/hello-world"},
 				ghExec: expectCallToGh(t, "octocat/hello-world", ""),
-				config: "",
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octodog
+								- octopus
+				`,
 			},
-			exit: 1,
+			exit: 0,
+		},
+		{
+			name: "when the target is not a number",
+			args: args{
+				args:   []string{"--repo", "octodog/hello-cat", "abc"},
+				ghExec: expectCallToGh(t, "octodog/hello-cat", "abc"),
+				config: `
+					repositories:
+						octodog/hello-cat:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
 		},
 		{
 			name: "config does not exist",
 			args: args{
-				args:   []string{"octocat/hello-world", "123"},
+				args:   []string{"--repo", "octocat/hello-world", "123"},
 				ghExec: expectNoCallToGh(t),
 				config: "",
 			},
@@ -372,7 +384,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "invalid config",
 			args: args{
-				args:   []string{"octocat/hello-world", "123"},
+				args:   []string{"--repo", "octocat/hello-world", "123"},
 				ghExec: expectNoCallToGh(t),
 				config: "!!!",
 			},
@@ -381,7 +393,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "repository does not exist in config",
 			args: args{
-				args:   []string{"octocat/hello-world", "123"},
+				args:   []string{"--repo", "octocat/hello-world", "123"},
 				ghExec: expectNoCallToGh(t),
 				config: `
 					repositories:
@@ -396,7 +408,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "group does not exist in config",
 			args: args{
-				args:   []string{"--from", "does-not-exist", "octocat/hello-world", "123"},
+				args:   []string{"--from", "does-not-exist", "--repo", "octocat/hello-world", "123"},
 				ghExec: expectNoCallToGh(t),
 				config: `
 					repositories:
@@ -411,7 +423,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "fulsome case",
 			args: args{
-				args:   []string{"octocat/hello-sunshine", "123"},
+				args:   []string{"--repo", "octocat/hello-sunshine", "123"},
 				ghExec: expectCallToGh(t, "octocat/hello-sunshine", "123"),
 				config: `
 					repositories:
@@ -429,7 +441,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "dry run",
 			args: args{
-				args:   []string{"--dry-run", "octocat/hello-world", "123"},
+				args:   []string{"--dry-run", "--repo", "octocat/hello-world", "123"},
 				ghExec: expectNoCallToGh(t),
 				config: `
 					repositories:
@@ -447,7 +459,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "explicit group",
 			args: args{
-				args:   []string{"--from", "infra", "octocat/hello-world", "123"},
+				args:   []string{"--from", "infra", "--repo", "octocat/hello-world", "123"},
 				ghExec: expectCallToGh(t, "octocat/hello-world", "123"),
 				config: `
 					repositories:
@@ -468,7 +480,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "when ghExec fails",
 			args: args{
-				args: []string{"octocat/hello-world"},
+				args: []string{"--repo", "octocat/hello-world"},
 				ghExec: func(_ ...string) (string, string) {
 					t.Helper()
 

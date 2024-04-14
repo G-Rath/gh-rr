@@ -116,68 +116,29 @@ no reviewers are configured for octocat/hello-world
 null
 ---
 
-[Test_run/repository_must_be_prefixed_with_owner - 1]
+[Test_run/when_--repo_is_a_url - 1]
 
 ---
 
-[Test_run/repository_must_be_prefixed_with_owner - 2]
+[Test_run/when_--repo_is_a_url - 2]
 repository should be in the format of <owner>/<repository>
 
 ---
 
-[Test_run/repository_must_be_prefixed_with_owner - 3]
+[Test_run/when_--repo_is_a_url - 3]
 null
 ---
 
-[Test_run/repository_must_be_provided_as_the_first_argument - 1]
+[Test_run/when_--repo_is_not_prefixed_with_the_owner - 1]
 
 ---
 
-[Test_run/repository_must_be_provided_as_the_first_argument - 2]
-first argument must be repository in <owner>/<repository> format
-
----
-
-[Test_run/repository_must_be_provided_as_the_first_argument - 3]
-null
----
-
-[Test_run/repository_should_not_be_a_url - 1]
-
----
-
-[Test_run/repository_should_not_be_a_url - 2]
+[Test_run/when_--repo_is_not_prefixed_with_the_owner - 2]
 repository should be in the format of <owner>/<repository>
 
 ---
 
-[Test_run/repository_should_not_be_a_url - 3]
-null
----
-
-[Test_run/target_does_not_have_to_be_a_number - 1]
-
----
-
-[Test_run/target_does_not_have_to_be_a_number - 2]
-please create <tempdir>/gh-rr.yml to configure your repositories
-
----
-
-[Test_run/target_does_not_have_to_be_a_number - 3]
-null
----
-
-[Test_run/target_is_not_required - 1]
-
----
-
-[Test_run/target_is_not_required - 2]
-please create <tempdir>/gh-rr.yml to configure your repositories
-
----
-
-[Test_run/target_is_not_required - 3]
+[Test_run/when_--repo_is_not_prefixed_with_the_owner - 3]
 null
 ---
 
@@ -200,5 +161,68 @@ could not add reviewers: no pull requests found for branch "update-readme"
  "octocat/hello-world",
  "--add-reviewer",
  "octocat"
+]
+---
+
+[Test_run/when_no_arguments_are_provided - 1]
+requested reviews on https://github.com/octocat/hello-world/pull/ from:
+  - octodog
+  - octopus
+
+---
+
+[Test_run/when_no_arguments_are_provided - 2]
+
+---
+
+[Test_run/when_no_arguments_are_provided - 3]
+[
+ "pr",
+ "edit",
+ "",
+ "--repo",
+ "octocat/hello-world",
+ "--add-reviewer",
+ "octodog",
+ "--add-reviewer",
+ "octopus"
+]
+---
+
+[Test_run/when_the_--repo_flag_is_not_provided - 1]
+
+---
+
+[Test_run/when_the_--repo_flag_is_not_provided - 2]
+--repo flag is required and must be in <owner>/<repository> format
+
+---
+
+[Test_run/when_the_--repo_flag_is_not_provided - 3]
+null
+---
+
+[Test_run/when_the_target_is_not_a_number - 1]
+requested reviews on https://github.com/octodog/hello-cat/pull/abc from:
+  - octodog
+  - octopus
+
+---
+
+[Test_run/when_the_target_is_not_a_number - 2]
+
+---
+
+[Test_run/when_the_target_is_not_a_number - 3]
+[
+ "pr",
+ "edit",
+ "abc",
+ "--repo",
+ "octodog/hello-cat",
+ "--add-reviewer",
+ "octodog",
+ "--add-reviewer",
+ "octopus"
 ]
 ---
