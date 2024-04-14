@@ -317,6 +317,36 @@ func Test_run(t *testing.T) {
 		exit int
 	}{
 		{
+			name: "when help is requested",
+			args: args{
+				args:   []string{"--help"},
+				ghExec: expectNoCallToGh(t),
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "when an unknown flag is requested",
+			args: args{
+				args:   []string{"--blah"},
+				ghExec: expectNoCallToGh(t),
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 1,
+		},
+		{
 			name: "when no arguments are provided",
 			args: args{
 				args:   []string{},

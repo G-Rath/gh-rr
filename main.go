@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/cli/go-gh/v2"
 	"github.com/cli/go-gh/v2/pkg/repository"
+	flag "github.com/spf13/pflag"
 	"gopkg.in/yaml.v3"
 )
 
@@ -101,21 +101,31 @@ func inferCurrentRepository() (string, error) {
 type ghExecutor = func(args ...string) (stdout, stderr string)
 
 func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
-	cli := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	cli := flag.NewFlagSet("gh rr", flag.ContinueOnError)
 
 	repoF := cli.String("repo", "", "select another repository using the [HOST/]OWNER/REPO format")
 	group := cli.String("from", "default", "group of users to request review from")
 	configDir := cli.String("config-dir", mustGetUserHomeDir(), "directory to search for the configuration file")
-	isDryRun := cli.Bool("dry-run", false, "")
+	isDryRun := cli.Bool("dry-run", false, "outputs instead of executing gh")
 
-	// cli is set for ExitOnError so this will never return an error
-	_ = cli.Parse(args)
+	cli.SetOutput(stderr)
+
+	err := cli.Parse(args)
+
+	if err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+
+		fmt.Fprintln(stderr, err)
+
+		return 1
+	}
 
 	target := cli.Arg(0)
 
 	repo := *repoF
 
-	var err error
 	if repo == "" {
 		repo, err = inferCurrentRepository()
 

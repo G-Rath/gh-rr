@@ -21,6 +21,24 @@ func normalizeFilePaths(t *testing.T, output string) string {
 	return strings.ReplaceAll(strings.ReplaceAll(output, "\\\\", "/"), "\\", "/")
 }
 
+// normalizeUserHomeDirectory attempts to replace references to the user home
+// directory with "<homedir>", in order to reduce the noise of the cmp diff
+func normalizeUserHomeDirectory(t *testing.T, str string) string {
+	t.Helper()
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		t.Errorf("could not get user home (%v) - results and diff might be inaccurate!", err)
+	}
+
+	homeDir = normalizeFilePaths(t, homeDir)
+
+	// file uris with Windows end up with three slashes, so we normalize that too
+	str = strings.ReplaceAll(str, "file:///"+homeDir, "file://<homedir>")
+
+	return strings.ReplaceAll(str, homeDir, "<homedir>")
+}
+
 // normalizeTempDirectory attempts to replace references to the temp directory
 // with "<tempdir>", to ensure tests pass across different OSs
 func normalizeTempDirectory(t *testing.T, str string) string {
@@ -54,6 +72,7 @@ func normalizeStdStream(t *testing.T, std *bytes.Buffer) string {
 	for _, normalizer := range []func(t *testing.T, str string) string{
 		normalizeFilePaths,
 		normalizeTempDirectory,
+		normalizeUserHomeDirectory,
 		normalizeErrors,
 	} {
 		str = normalizer(t, str)
