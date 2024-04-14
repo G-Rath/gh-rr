@@ -395,6 +395,24 @@ func Test_run(t *testing.T) {
 			exit: 0,
 		},
 		{
+			name: "when -R is provided",
+			args: args{
+				args:   []string{"-R", "octocat/hello-sunshine", "123"},
+				ghExec: expectCallToGh(t, "octocat/hello-sunshine", "123"),
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octocat
+						octocat/hello-sunshine:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
 			name: "when --repo is not prefixed with the owner",
 			args: args{
 				args:   []string{"--repo", "hello-world"},
@@ -491,6 +509,27 @@ func Test_run(t *testing.T) {
 			name: "explicit group",
 			args: args{
 				args:   []string{"--from", "infra", "123"},
+				ghExec: expectCallToGh(t, "octocat/hello-world", "123"),
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octocat
+							infra:
+								- octodog
+								- octopus
+						octocat/hello-sunshine:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "when a group is provided (shorthand)",
+			args: args{
+				args:   []string{"-f", "infra", "123"},
 				ghExec: expectCallToGh(t, "octocat/hello-world", "123"),
 				config: `
 					repositories:

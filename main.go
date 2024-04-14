@@ -103,8 +103,8 @@ type ghExecutor = func(args ...string) (stdout, stderr string)
 func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 	cli := flag.NewFlagSet("gh rr", flag.ContinueOnError)
 
-	repoF := cli.String("repo", "", "select another repository using the [HOST/]OWNER/REPO format")
-	group := cli.String("from", "default", "group of users to request review from")
+	repoF := cli.StringP("repo", "R", "", "select another repository using the [HOST/]OWNER/REPO format")
+	group := cli.StringP("from", "f", "default", "group of users to request review from")
 	configDir := cli.String("config-dir", mustGetUserHomeDir(), "directory to search for the configuration file")
 	isDryRun := cli.Bool("dry-run", false, "outputs instead of executing gh")
 

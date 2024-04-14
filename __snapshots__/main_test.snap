@@ -155,6 +155,56 @@ requested reviews on https://github.com/octocat/hello-sunshine/pull/123 from:
 ]
 ---
 
+[Test_run/when_-R_is_provided - 1]
+requested reviews on https://github.com/octocat/hello-sunshine/pull/123 from:
+  - octodog
+  - octopus
+
+---
+
+[Test_run/when_-R_is_provided - 2]
+
+---
+
+[Test_run/when_-R_is_provided - 3]
+[
+ "pr",
+ "edit",
+ "123",
+ "--repo",
+ "octocat/hello-sunshine",
+ "--add-reviewer",
+ "octodog",
+ "--add-reviewer",
+ "octopus"
+]
+---
+
+[Test_run/when_a_group_is_provided_(shorthand) - 1]
+requested reviews on https://github.com/octocat/hello-world/pull/123 from:
+  - octodog
+  - octopus
+
+---
+
+[Test_run/when_a_group_is_provided_(shorthand) - 2]
+
+---
+
+[Test_run/when_a_group_is_provided_(shorthand) - 3]
+[
+ "pr",
+ "edit",
+ "123",
+ "--repo",
+ "octocat/hello-world",
+ "--add-reviewer",
+ "octodog",
+ "--add-reviewer",
+ "octopus"
+]
+---
+
 [Test_run/when_an_unknown_flag_is_requested - 1]
 
 ---
@@ -198,8 +248,8 @@ could not add reviewers: no pull requests found for branch "update-readme"
 Usage of gh rr:
       --config-dir string   directory to search for the configuration file (default "<homedir>")
       --dry-run             outputs instead of executing gh
-      --from string         group of users to request review from (default "default")
-      --repo string         select another repository using the [HOST/]OWNER/REPO format
+  -f, --from string         group of users to request review from (default "default")
+  -R, --repo string         select another repository using the [HOST/]OWNER/REPO format
 
 ---
 
