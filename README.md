@@ -40,7 +40,7 @@ pull request are inferred automatically based on the current directory and
 checked out branch when called without any flags or arguments.
 
 Like with `gh pr edit`, you can pass either a pull request number, url, or
-branch as the first argument, and can use the `--repo` flag to specify the
+branch as the first argument, and can use the `-R|--repo` flag to specify the
 repository the pull request you're targeting belongs to:
 
 ```shell
@@ -51,11 +51,7 @@ gh rr 123
 gh --repo octocat/hello-world my-feature
 ```
 
-> [!NOTE]
->
-> Currently, unlike the `gh` cli, the `-R` short-flag is not supported
-
-You can also use the `--from` flag to target alternative reviewer groups:
+You can also use the `-f|--from` flag to target alternative reviewer groups:
 
 ```shell
 gh rr --from infra
