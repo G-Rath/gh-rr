@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -147,18 +148,26 @@ func writeTempConfigFile(t *testing.T, content string) string {
 	return f.Name()
 }
 
-// expectNoCallToGh fails the test if it is called
-func expectNoCallToGh(t *testing.T, _ ...string) (string, string) {
+// expectNoCallToGh builds a function that fails the test if it is called
+func expectNoCallToGh(t *testing.T) ghExecutor {
 	t.Helper()
 
-	t.Errorf("unexpected call to gh")
+	return func(_ ...string) (string, string) {
+		t.Helper()
 
-	return "", ""
+		t.Errorf("unexpected call to gh")
+
+		return "", ""
+	}
 }
 
-// expectCallToGh acts as a successful call to gh.Exec
-func expectCallToGh(t *testing.T, _ ...string) (string, string) {
+// expectCallToGh builds a function that acts as a successful call to gh.Exec
+func expectCallToGh(t *testing.T, repo, target string) ghExecutor {
 	t.Helper()
 
-	return "https://github.com/octocat/hello-world", ""
+	return func(_ ...string) (string, string) {
+		t.Helper()
+
+		return fmt.Sprintf("https://github.com/%s/pull/%s", repo, target), ""
+	}
 }

@@ -8,6 +8,10 @@ please create <tempdir>/gh-rr.yml to configure your repositories
 
 ---
 
+[Test_run/config_does_not_exist - 3]
+null
+---
+
 [Test_run/dry_run - 1]
 would have used `gh pr edit` to request reviews from:
   - octocat
@@ -18,8 +22,12 @@ would have used `gh pr edit` to request reviews from:
 
 ---
 
+[Test_run/dry_run - 3]
+null
+---
+
 [Test_run/explicit_group - 1]
-requested reviews on https://github.com/octocat/hello-world from:
+requested reviews on https://github.com/octocat/hello-world/pull/123 from:
   - octodog
   - octopus
 
@@ -44,8 +52,9 @@ requested reviews on https://github.com/octocat/hello-world from:
 ---
 
 [Test_run/fulsome_case - 1]
-requested reviews on https://github.com/octocat/hello-world from:
-  - octocat
+requested reviews on https://github.com/octocat/hello-sunshine/pull/123 from:
+  - octodog
+  - octopus
 
 ---
 
@@ -59,9 +68,11 @@ requested reviews on https://github.com/octocat/hello-world from:
  "edit",
  "123",
  "--repo",
- "octocat/hello-world",
+ "octocat/hello-sunshine",
  "--add-reviewer",
- "octocat"
+ "octodog",
+ "--add-reviewer",
+ "octopus"
 ]
 ---
 
@@ -74,6 +85,10 @@ octocat/hello-world does not have a group named does-not-exist
 
 ---
 
+[Test_run/group_does_not_exist_in_config - 3]
+null
+---
+
 [Test_run/invalid_config - 1]
 
 ---
@@ -82,6 +97,10 @@ octocat/hello-world does not have a group named does-not-exist
 yaml: unmarshal errors:
   line 1: cannot unmarshal !!! `` into main.Config
 
+---
+
+[Test_run/invalid_config - 3]
+null
 ---
 
 [Test_run/repository_does_not_exist_in_config - 1]
@@ -93,6 +112,10 @@ no reviewers are configured for octocat/hello-world
 
 ---
 
+[Test_run/repository_does_not_exist_in_config - 3]
+null
+---
+
 [Test_run/repository_must_be_prefixed_with_owner - 1]
 
 ---
@@ -100,6 +123,10 @@ no reviewers are configured for octocat/hello-world
 [Test_run/repository_must_be_prefixed_with_owner - 2]
 repository should be in the format of <owner>/<repository>
 
+---
+
+[Test_run/repository_must_be_prefixed_with_owner - 3]
+null
 ---
 
 [Test_run/repository_must_be_provided_as_the_first_argument - 1]
@@ -111,6 +138,10 @@ first argument must be repository in <owner>/<repository> format
 
 ---
 
+[Test_run/repository_must_be_provided_as_the_first_argument - 3]
+null
+---
+
 [Test_run/repository_should_not_be_a_url - 1]
 
 ---
@@ -118,6 +149,10 @@ first argument must be repository in <owner>/<repository> format
 [Test_run/repository_should_not_be_a_url - 2]
 repository should be in the format of <owner>/<repository>
 
+---
+
+[Test_run/repository_should_not_be_a_url - 3]
+null
 ---
 
 [Test_run/target_does_not_have_to_be_a_number - 1]
@@ -129,6 +164,10 @@ please create <tempdir>/gh-rr.yml to configure your repositories
 
 ---
 
+[Test_run/target_does_not_have_to_be_a_number - 3]
+null
+---
+
 [Test_run/target_is_not_required - 1]
 
 ---
@@ -136,6 +175,10 @@ please create <tempdir>/gh-rr.yml to configure your repositories
 [Test_run/target_is_not_required - 2]
 please create <tempdir>/gh-rr.yml to configure your repositories
 
+---
+
+[Test_run/target_is_not_required - 3]
+null
 ---
 
 [Test_run/when_ghExec_fails - 1]
