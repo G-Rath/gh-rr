@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/cli/go-gh/v2"
+	"github.com/cli/go-gh/v2/pkg/repository"
 	"gopkg.in/yaml.v3"
 )
 
@@ -86,20 +87,14 @@ func mustGetUserHomeDir() string {
 	return dir
 }
 
-func validateRepositoryFlag(stderr io.Writer, repo string) bool {
-	if repo == "" {
-		fmt.Fprintln(stderr, "--repo flag is required and must be in <owner>/<repository> format")
+func inferCurrentRepository() (string, error) {
+	repo, err := repository.Current()
 
-		return false
+	if err != nil {
+		return "", err
 	}
 
-	if _, _, found := strings.Cut(repo, "/"); !found || strings.HasPrefix(repo, "http") {
-		fmt.Fprintln(stderr, "repository should be in the format of <owner>/<repository>")
-
-		return false
-	}
-
-	return true
+	return fmt.Sprintf("%s/%s", repo.Owner, repo.Name), nil
 }
 
 // ghExecutor invokes a gh command in a subprocess and captures the output and error streams
@@ -108,7 +103,7 @@ type ghExecutor = func(args ...string) (stdout, stderr string)
 func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 	cli := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
-	repo := cli.String("repo", "", "select another repository using the [HOST/]OWNER/REPO format")
+	repoF := cli.String("repo", "", "select another repository using the [HOST/]OWNER/REPO format")
 	group := cli.String("from", "default", "group of users to request review from")
 	configDir := cli.String("config-dir", mustGetUserHomeDir(), "directory to search for the configuration file")
 	isDryRun := cli.Bool("dry-run", false, "")
@@ -118,7 +113,22 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 
 	target := cli.Arg(0)
 
-	if !validateRepositoryFlag(stderr, *repo) {
+	repo := *repoF
+
+	var err error
+	if repo == "" {
+		repo, err = inferCurrentRepository()
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "could not determine repository: %v\n", err)
+
+			return 1
+		}
+	}
+
+	if _, _, found := strings.Cut(repo, "/"); !found || strings.HasPrefix(repo, "http") {
+		fmt.Fprintln(stderr, "repository should be in the format of <owner>/<repository>")
+
 		return 1
 	}
 
@@ -135,13 +145,13 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 		return 1
 	}
 
-	reviewers, err := determineReviewers(config, *repo, *group)
+	reviewers, err := determineReviewers(config, repo, *group)
 
 	if err != nil {
 		if errors.Is(err, ErrRepositoryNotConfigured) {
-			fmt.Fprintf(stderr, "no reviewers are configured for %s\n", *repo)
+			fmt.Fprintf(stderr, "no reviewers are configured for %s\n", repo)
 		} else if errors.Is(err, ErrGroupNotConfigured) {
-			fmt.Fprintf(stderr, "%s does not have a group named %s\n", *repo, *group)
+			fmt.Fprintf(stderr, "%s does not have a group named %s\n", repo, *group)
 		} else {
 			fmt.Fprintf(stderr, "%v\n", err)
 		}
@@ -150,9 +160,9 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 	}
 
 	if *isDryRun {
-		fmt.Fprintf(stdout, "would have used `gh pr edit` to request reviews from:\n")
+		fmt.Fprintf(stdout, "would have used `gh pr edit --repo %s` to request reviews from:\n", repo)
 	} else {
-		url, errMsg := ghExec(buildAddReviewersArgs(*repo, target, reviewers)...)
+		url, errMsg := ghExec(buildAddReviewersArgs(repo, target, reviewers)...)
 
 		if errMsg != "" {
 			fmt.Fprintf(stdout, "\ncould not add reviewers: %s\n", strings.TrimSpace(errMsg))

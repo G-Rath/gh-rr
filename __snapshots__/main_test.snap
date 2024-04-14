@@ -13,7 +13,7 @@ null
 ---
 
 [Test_run/dry_run - 1]
-would have used `gh pr edit` to request reviews from:
+would have used `gh pr edit --repo octocat/hello-world` to request reviews from:
   - octocat
 
 ---
@@ -44,31 +44,6 @@ requested reviews on https://github.com/octocat/hello-world/pull/123 from:
  "123",
  "--repo",
  "octocat/hello-world",
- "--add-reviewer",
- "octodog",
- "--add-reviewer",
- "octopus"
-]
----
-
-[Test_run/fulsome_case - 1]
-requested reviews on https://github.com/octocat/hello-sunshine/pull/123 from:
-  - octodog
-  - octopus
-
----
-
-[Test_run/fulsome_case - 2]
-
----
-
-[Test_run/fulsome_case - 3]
-[
- "pr",
- "edit",
- "123",
- "--repo",
- "octocat/hello-sunshine",
  "--add-reviewer",
  "octodog",
  "--add-reviewer",
@@ -142,6 +117,44 @@ repository should be in the format of <owner>/<repository>
 null
 ---
 
+[Test_run/when_--repo_is_not_prefixed_with_the_owner#01 - 1]
+
+---
+
+[Test_run/when_--repo_is_not_prefixed_with_the_owner#01 - 2]
+repository should be in the format of <owner>/<repository>
+
+---
+
+[Test_run/when_--repo_is_not_prefixed_with_the_owner#01 - 3]
+null
+---
+
+[Test_run/when_--repo_is_provided - 1]
+requested reviews on https://github.com/octocat/hello-sunshine/pull/123 from:
+  - octodog
+  - octopus
+
+---
+
+[Test_run/when_--repo_is_provided - 2]
+
+---
+
+[Test_run/when_--repo_is_provided - 3]
+[
+ "pr",
+ "edit",
+ "123",
+ "--repo",
+ "octocat/hello-sunshine",
+ "--add-reviewer",
+ "octodog",
+ "--add-reviewer",
+ "octopus"
+]
+---
+
 [Test_run/when_ghExec_fails - 1]
 
 could not add reviewers: no pull requests found for branch "update-readme"
@@ -189,21 +202,8 @@ requested reviews on https://github.com/octocat/hello-world/pull/ from:
 ]
 ---
 
-[Test_run/when_the_--repo_flag_is_not_provided - 1]
-
----
-
-[Test_run/when_the_--repo_flag_is_not_provided - 2]
---repo flag is required and must be in <owner>/<repository> format
-
----
-
-[Test_run/when_the_--repo_flag_is_not_provided - 3]
-null
----
-
 [Test_run/when_the_target_is_not_a_number - 1]
-requested reviews on https://github.com/octodog/hello-cat/pull/abc from:
+requested reviews on https://github.com/octocat/hello=world/pull/abc from:
   - octodog
   - octopus
 
@@ -219,10 +219,32 @@ requested reviews on https://github.com/octodog/hello-cat/pull/abc from:
  "edit",
  "abc",
  "--repo",
- "octodog/hello-cat",
+ "octocat/hello-world",
  "--add-reviewer",
  "octodog",
  "--add-reviewer",
  "octopus"
+]
+---
+
+[Test_run_WithoutRepoFlag - 1]
+requested reviews on https://github.com/G-Rath/gh-rr from:
+  - octocat
+
+---
+
+[Test_run_WithoutRepoFlag - 2]
+
+---
+
+[Test_run_WithoutRepoFlag - 3]
+[
+ "pr",
+ "edit",
+ "",
+ "--repo",
+ "G-Rath/gh-rr",
+ "--add-reviewer",
+ "octocat"
 ]
 ---
