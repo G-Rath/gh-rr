@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"reflect"
+	"slices"
 	"testing"
 
 	"github.com/gkampitakis/go-snaps/snaps"
@@ -316,9 +317,57 @@ func Test_run(t *testing.T) {
 		exit int
 	}{
 		{
-			name: "when the --repo flag is not provided",
+			name: "when no arguments are provided",
 			args: args{
 				args:   []string{},
+				ghExec: expectCallToGh(t, "octocat/hello-world", ""),
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "when the target is not a number",
+			args: args{
+				args:   []string{"abc"},
+				ghExec: expectCallToGh(t, "octocat/hello=world", "abc"),
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "when --repo is provided",
+			args: args{
+				args:   []string{"--repo", "octocat/hello-sunshine", "123"},
+				ghExec: expectCallToGh(t, "octocat/hello-sunshine", "123"),
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octocat
+						octocat/hello-sunshine:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "when --repo is not prefixed with the owner",
+			args: args{
+				args:   []string{"--repo", "hello-world"},
 				ghExec: expectNoCallToGh(t),
 				config: "",
 			},
@@ -343,39 +392,9 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "when no arguments are provided",
-			args: args{
-				args:   []string{"--repo", "octocat/hello-world"},
-				ghExec: expectCallToGh(t, "octocat/hello-world", ""),
-				config: `
-					repositories:
-						octocat/hello-world:
-							default:
-								- octodog
-								- octopus
-				`,
-			},
-			exit: 0,
-		},
-		{
-			name: "when the target is not a number",
-			args: args{
-				args:   []string{"--repo", "octodog/hello-cat", "abc"},
-				ghExec: expectCallToGh(t, "octodog/hello-cat", "abc"),
-				config: `
-					repositories:
-						octodog/hello-cat:
-							default:
-								- octodog
-								- octopus
-				`,
-			},
-			exit: 0,
-		},
-		{
 			name: "config does not exist",
 			args: args{
-				args:   []string{"--repo", "octocat/hello-world", "123"},
+				args:   []string{"123"},
 				ghExec: expectNoCallToGh(t),
 				config: "",
 			},
@@ -384,7 +403,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "invalid config",
 			args: args{
-				args:   []string{"--repo", "octocat/hello-world", "123"},
+				args:   []string{"123"},
 				ghExec: expectNoCallToGh(t),
 				config: "!!!",
 			},
@@ -393,7 +412,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "repository does not exist in config",
 			args: args{
-				args:   []string{"--repo", "octocat/hello-world", "123"},
+				args:   []string{"123"},
 				ghExec: expectNoCallToGh(t),
 				config: `
 					repositories:
@@ -408,7 +427,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "group does not exist in config",
 			args: args{
-				args:   []string{"--from", "does-not-exist", "--repo", "octocat/hello-world", "123"},
+				args:   []string{"--from", "does-not-exist", "123"},
 				ghExec: expectNoCallToGh(t),
 				config: `
 					repositories:
@@ -421,27 +440,9 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "fulsome case",
-			args: args{
-				args:   []string{"--repo", "octocat/hello-sunshine", "123"},
-				ghExec: expectCallToGh(t, "octocat/hello-sunshine", "123"),
-				config: `
-					repositories:
-						octocat/hello-world:
-							default:
-								- octocat
-						octocat/hello-sunshine:
-							default:
-								- octodog
-								- octopus
-				`,
-			},
-			exit: 0,
-		},
-		{
 			name: "dry run",
 			args: args{
-				args:   []string{"--dry-run", "--repo", "octocat/hello-world", "123"},
+				args:   []string{"--dry-run", "123"},
 				ghExec: expectNoCallToGh(t),
 				config: `
 					repositories:
@@ -459,7 +460,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "explicit group",
 			args: args{
-				args:   []string{"--from", "infra", "--repo", "octocat/hello-world", "123"},
+				args:   []string{"--from", "infra", "123"},
 				ghExec: expectCallToGh(t, "octocat/hello-world", "123"),
 				config: `
 					repositories:
@@ -480,7 +481,7 @@ func Test_run(t *testing.T) {
 		{
 			name: "when ghExec fails",
 			args: args{
-				args: []string{"--repo", "octocat/hello-world"},
+				args: []string{},
 				ghExec: func(_ ...string) (string, string) {
 					t.Helper()
 
@@ -514,6 +515,13 @@ func Test_run(t *testing.T) {
 			stderr := &bytes.Buffer{}
 
 			a := []string{"--config-dir", configDir}
+
+			// quietly explicitly set the repo, since otherwise it'll be inferred from
+			// the actual repo using git which is most likely going to be G-Rath/gh-rr
+			if !slices.Contains(tt.args.args, "--repo") {
+				a = append(a, "--repo", "octocat/hello-world")
+			}
+
 			a = append(a, tt.args.args...)
 
 			var ghExecArgs []string
@@ -534,6 +542,43 @@ func Test_run(t *testing.T) {
 			snaps.MatchSnapshot(t, normalizeStdStream(t, stderr))
 			snaps.MatchJSON(t, ghExecArgs)
 		})
+	}
+}
+
+func Test_run_WithoutRepoFlag(t *testing.T) {
+	t.Parallel()
+
+	configDir := writeConfigFileInTempDir(t, dedent(t, `
+		repositories:
+			G-Rath/gh-rr:
+				default:
+					- octocat
+	`))
+
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+
+	var ghExecArgs []string
+	ghExecCalled := false
+
+	got := run([]string{"--config-dir", configDir}, stdout, stderr, func(args ...string) (stdout, stderr string) {
+		t.Helper()
+
+		ghExecArgs = args
+		ghExecCalled = true
+
+		return "https://github.com/G-Rath/gh-rr", ""
+	})
+
+	if got != 0 {
+		t.Errorf("run() = %v, want %v", got, 0)
+	}
+
+	snaps.MatchSnapshot(t, normalizeStdStream(t, stdout))
+	snaps.MatchSnapshot(t, normalizeStdStream(t, stderr))
+
+	if ghExecCalled {
+		snaps.MatchJSON(t, ghExecArgs)
 	}
 }
 
