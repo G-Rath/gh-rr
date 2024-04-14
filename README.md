@@ -31,28 +31,32 @@ repositories:
 Then start requesting reviewers on your pull requests:
 
 ```shell
-# will infer the pull request to target based on the current branch
-gh rr --repo g-rath/my-awesome-app
-
-# will infer the pull request based on the named branch
-gh rr --repo g-rath/my-awesome-app my-feature
-
-# will target the specific pull request
-gh rr --repo g-rath/my-awesome-app 123
+gh rr
 ```
 
 As a thin wrapper around
-[`gh pr edit`](https://cli.github.com/manual/gh_pr_edit), the first argument is
-passed directly through to the cli, so you can provide a pull request number,
-url, branch, or nothing at all!
+[`gh pr edit`](https://cli.github.com/manual/gh_pr_edit), the repository and
+pull request are inferred automatically based on the current directory and
+checked out branch when called without any flags or arguments.
+
+Like with `gh pr edit`, you can pass either a pull request number, url, or
+branch as the first argument, and can use the `--repo` flag to specify the
+repository the pull request you're targeting belongs to:
+
+```shell
+# targeting a specific pull request in the current repository
+gh rr 123
+
+# targeting the pull request associated with a specific branch in another repository
+gh --repo octocat/hello-world my-feature
+```
 
 > [!NOTE]
 >
-> Currently unlike the `gh` cli, the `--repo` flag is required and the `-R`
-> short-flag is not supported
+> Currently, unlike the `gh` cli, the `-R` short-flag is not supported
 
-You can specify specific groups using `--from`:
+You can also use the `--from` flag to target alternative reviewer groups:
 
 ```shell
-gh rr --from infra --repo g-rath/my-awesome-app 123
+gh rr --from infra
 ```
