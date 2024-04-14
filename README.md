@@ -16,14 +16,22 @@ reviewers:
 ```yaml
 # this is a map of repositories to groups of GitHub usernames
 repositories:
+  # these are "global" groups, which can be enabled with -g|--global
+  '*':
+    bob: [octopus]
+    security:
+      - octopus
   g-rath/my-awesome-app:
+    # this is the default group that will be used for this repository
     default:
       - g-rath
       - octocat
+    # this is an alternative group for this repository, which can be selected with -f|--from
     infra:
       - octodog
       - octopus
   g-rath/dotfiles:
+    # this is the default group that will be used for this repository
     default:
       - g-rath
 ```
@@ -55,6 +63,17 @@ You can also use the `-f|--from` flag to target alternative reviewer groups:
 
 ```shell
 gh rr --from infra
+```
+
+This can be combined with the `-g|--global` to target "global" groups which are
+defined under the `*` repository:
+
+```shell
+# makes it easy to add a specific person
+gh rr -gf bob
+
+# or target a group of common people
+gh rr -gf security
 ```
 
 ## Why not use [CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) or [GitHub teams](https://docs.github.com/en/organizations/organizing-members-into-teams/managing-code-review-settings-for-your-team)?

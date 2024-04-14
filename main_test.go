@@ -344,6 +344,167 @@ func Test_run(t *testing.T) {
 	}
 }
 
+func Test_run_GlobalGroups(t *testing.T) {
+	t.Parallel()
+
+	type args struct {
+		args   []string
+		config string
+		ghExec ghExecutor
+	}
+	tests := []struct {
+		name string
+		args args
+		exit int
+	}{
+		{
+			name: "when using the longhand flag",
+			args: args{
+				args:   []string{"--global", "--from", "security"},
+				ghExec: expectCallToGh(t, "octocat/hello-world", "1"),
+				config: `
+					repositories:
+						'*':
+							security:
+								- octodog
+						octocat/hello-world:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "when using the shorthand flag",
+			args: args{
+				args:   []string{"-g", "--from", "security"},
+				ghExec: expectCallToGh(t, "octocat/hello-world", "1"),
+				config: `
+					repositories:
+						'*':
+							security:
+								- octodog
+						octocat/hello-world:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "when combining shorthand flags",
+			args: args{
+				args:   []string{"-gf", "security"},
+				ghExec: expectCallToGh(t, "octocat/hello-world", "1"),
+				config: `
+					repositories:
+						'*':
+							security:
+								- octodog
+						octocat/hello-world:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "when the repo has a group with the same name",
+			args: args{
+				args:   []string{"-gf", "security"},
+				ghExec: expectCallToGh(t, "octocat/hello-world", "1"),
+				config: `
+					repositories:
+						'*':
+							security:
+								- octodog
+						octocat/hello-world:
+							security:
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "when the repo has a group with the same name but the global one does not exist",
+			args: args{
+				args:   []string{"-gf", "security"},
+				ghExec: expectNoCallToGh(t),
+				config: `
+					repositories:
+						'*':
+							platforms:
+								- octodog
+						octocat/hello-world:
+							security:
+								- octopus
+				`,
+			},
+			exit: 1,
+		},
+		{
+			name: "when a specific repository is given that is not in the config",
+			args: args{
+				args:   []string{"-gf", "security", "-R", "octocat/hello-sunshine"},
+				ghExec: expectCallToGh(t, "octocat/hello-sunshine", "1"),
+				config: `
+					repositories:
+						'*':
+							security:
+								- octodog
+						octocat/hello-world:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			configDir := writeConfigFileInTempDir(t, dedent(t, tt.args.config))
+
+			stdout := &bytes.Buffer{}
+			stderr := &bytes.Buffer{}
+
+			a := []string{"--config-dir", configDir}
+
+			// quietly explicitly set the repo, since otherwise it'll be inferred from
+			// the actual repo using git which is most likely going to be G-Rath/gh-rr
+			if !slices.Contains(tt.args.args, "--repo") {
+				a = append(a, "--repo", "octocat/hello-world")
+			}
+
+			a = append(a, tt.args.args...)
+
+			var ghExecArgs []string
+
+			got := run(a, stdout, stderr, func(args ...string) (stdout, stderr string) {
+				t.Helper()
+
+				ghExecArgs = args
+
+				return tt.args.ghExec(args...)
+			})
+
+			if got != tt.exit {
+				t.Errorf("run() = %v, want %v", got, tt.exit)
+			}
+
+			snaps.MatchSnapshot(t, normalizeStdStream(t, stdout))
+			snaps.MatchSnapshot(t, normalizeStdStream(t, stderr))
+			snaps.MatchJSON(t, ghExecArgs)
+		})
+	}
+}
+
 func Test_run_WithoutRepoFlag(t *testing.T) {
 	t.Parallel()
 

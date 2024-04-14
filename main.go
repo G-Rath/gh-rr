@@ -100,6 +100,7 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 
 	repoF := cli.StringP("repo", "R", "", "select another repository using the [HOST/]OWNER/REPO format")
 	group := cli.StringP("from", "f", "default", "group of users to request review from")
+	globalGroups := cli.BoolP("global", "g", false, "use the global reviewer groups")
 	configDir := cli.String("config-dir", mustGetUserHomeDir(), "directory to search for the configuration file")
 	isDryRun := cli.Bool("dry-run", false, "outputs instead of executing gh")
 
@@ -153,7 +154,12 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 		return 1
 	}
 
-	reviewers, err := determineReviewers(conf, strings.ToLower(repo), *group)
+	repo2 := repo
+
+	if *globalGroups {
+		repo2 = "*"
+	}
+	reviewers, err := determineReviewers(conf, strings.ToLower(repo2), *group)
 
 	if err != nil {
 		if errors.Is(err, errRepositoryNotConfigured) {
