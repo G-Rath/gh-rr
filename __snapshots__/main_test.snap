@@ -178,7 +178,7 @@ could not add reviewers: no pull requests found for branch "update-readme"
 ---
 
 [Test_run/when_no_arguments_are_provided - 1]
-requested reviews on https://github.com/octocat/hello-world/pull/ from:
+requested reviews on https://github.com/octocat/hello-world/pull/1 from:
   - octodog
   - octopus
 
@@ -203,7 +203,7 @@ requested reviews on https://github.com/octocat/hello-world/pull/ from:
 ---
 
 [Test_run/when_the_target_is_not_a_number - 1]
-requested reviews on https://github.com/octocat/hello=world/pull/abc from:
+requested reviews on https://github.com/octocat/hello-world/pull/abc from:
   - octodog
   - octopus
 

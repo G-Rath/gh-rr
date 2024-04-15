@@ -320,7 +320,7 @@ func Test_run(t *testing.T) {
 			name: "when no arguments are provided",
 			args: args{
 				args:   []string{},
-				ghExec: expectCallToGh(t, "octocat/hello-world", ""),
+				ghExec: expectCallToGh(t, "octocat/hello-world", "1"),
 				config: `
 					repositories:
 						octocat/hello-world:
@@ -335,7 +335,7 @@ func Test_run(t *testing.T) {
 			name: "when the target is not a number",
 			args: args{
 				args:   []string{"abc"},
-				ghExec: expectCallToGh(t, "octocat/hello=world", "abc"),
+				ghExec: expectCallToGh(t, "octocat/hello-world", "abc"),
 				config: `
 					repositories:
 						octocat/hello-world:
