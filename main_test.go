@@ -317,6 +317,36 @@ func Test_run(t *testing.T) {
 		exit int
 	}{
 		{
+			name: "when help is requested",
+			args: args{
+				args:   []string{"--help"},
+				ghExec: expectNoCallToGh(t),
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "when an unknown flag is requested",
+			args: args{
+				args:   []string{"--blah"},
+				ghExec: expectNoCallToGh(t),
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 1,
+		},
+		{
 			name: "when no arguments are provided",
 			args: args{
 				args:   []string{},
@@ -350,6 +380,24 @@ func Test_run(t *testing.T) {
 			name: "when --repo is provided",
 			args: args{
 				args:   []string{"--repo", "octocat/hello-sunshine", "123"},
+				ghExec: expectCallToGh(t, "octocat/hello-sunshine", "123"),
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octocat
+						octocat/hello-sunshine:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "when -R is provided",
+			args: args{
+				args:   []string{"-R", "octocat/hello-sunshine", "123"},
 				ghExec: expectCallToGh(t, "octocat/hello-sunshine", "123"),
 				config: `
 					repositories:
@@ -461,6 +509,27 @@ func Test_run(t *testing.T) {
 			name: "explicit group",
 			args: args{
 				args:   []string{"--from", "infra", "123"},
+				ghExec: expectCallToGh(t, "octocat/hello-world", "123"),
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octocat
+							infra:
+								- octodog
+								- octopus
+						octocat/hello-sunshine:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
+		},
+		{
+			name: "when a group is provided (shorthand)",
+			args: args{
+				args:   []string{"-f", "infra", "123"},
 				ghExec: expectCallToGh(t, "octocat/hello-world", "123"),
 				config: `
 					repositories:
