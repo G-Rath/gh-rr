@@ -18,3 +18,5 @@ jobs:
         with:
           persist-credentials: false
       - uses: cli/gh-extension-precompile@v1
+        with:
+          go_version_file: go.mod
