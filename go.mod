@@ -1,6 +1,6 @@
 module github.com/g-rath/gh-rr
 
-go 1.21.5
+go 1.21
 
 require (
 	github.com/cli/go-gh/v2 v2.8.0
