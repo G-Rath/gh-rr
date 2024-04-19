@@ -89,7 +89,7 @@ func Test_run(t *testing.T) {
 			exit: 0,
 		},
 		{
-			name: "when --repo is provided",
+			name: "when an explicit repository is provided using the longhand flag",
 			args: args{
 				args:   []string{"--repo", "octocat/hello-sunshine", "123"},
 				ghExec: expectCallToGh(t, "octocat/hello-sunshine", "123"),
@@ -107,7 +107,7 @@ func Test_run(t *testing.T) {
 			exit: 0,
 		},
 		{
-			name: "when -R is provided",
+			name: "when an explicit repository is provided using the shorthand flag",
 			args: args{
 				args:   []string{"-R", "octocat/hello-sunshine", "123"},
 				ghExec: expectCallToGh(t, "octocat/hello-sunshine", "123"),
@@ -125,7 +125,7 @@ func Test_run(t *testing.T) {
 			exit: 0,
 		},
 		{
-			name: "when --repo is not prefixed with the owner",
+			name: "when the explicit repository is not prefixed with the owner",
 			args: args{
 				args:   []string{"--repo", "hello-world"},
 				ghExec: expectNoCallToGh(t),
@@ -143,7 +143,7 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "when --repo is a url",
+			name: "when the explicit repository is a url",
 			args: args{
 				args:   []string{"--repo", "https://github.com/octocat/hello-world"},
 				ghExec: expectNoCallToGh(t),
@@ -152,7 +152,7 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "config does not exist",
+			name: "when the config file does not exist",
 			args: args{
 				args:   []string{"123"},
 				ghExec: expectNoCallToGh(t),
@@ -161,7 +161,7 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "invalid config",
+			name: "when the config file is invalid",
 			args: args{
 				args:   []string{"123"},
 				ghExec: expectNoCallToGh(t),
@@ -170,7 +170,7 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "repository does not exist in config",
+			name: "when the repository does not exist in config",
 			args: args{
 				args:   []string{"123"},
 				ghExec: expectNoCallToGh(t),
@@ -185,7 +185,7 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "group does not exist in config",
+			name: "when the group does not exist in config",
 			args: args{
 				args:   []string{"--from", "does-not-exist", "123"},
 				ghExec: expectNoCallToGh(t),
@@ -200,7 +200,7 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "dry run",
+			name: "when doing a dry-run",
 			args: args{
 				args:   []string{"--dry-run", "123"},
 				ghExec: expectNoCallToGh(t),
@@ -218,7 +218,7 @@ func Test_run(t *testing.T) {
 			exit: 0,
 		},
 		{
-			name: "explicit group",
+			name: "when an explicit group is provided using the longhand flag",
 			args: args{
 				args:   []string{"--from", "infra", "123"},
 				ghExec: expectCallToGh(t, "octocat/hello-world", "123"),
@@ -239,7 +239,7 @@ func Test_run(t *testing.T) {
 			exit: 0,
 		},
 		{
-			name: "when a group is provided (shorthand)",
+			name: "when an explicit group is provided using the shorthand flag",
 			args: args{
 				args:   []string{"-f", "infra", "123"},
 				ghExec: expectCallToGh(t, "octocat/hello-world", "123"),
