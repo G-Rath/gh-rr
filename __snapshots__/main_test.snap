@@ -209,7 +209,7 @@ null
 
 [Test_run/when_the_config_file_is_invalid - 2]
 yaml: unmarshal errors:
-  line 1: cannot unmarshal !!! `` into main.Config
+  line 1: cannot unmarshal !!! `` into main.config
 
 ---
 
