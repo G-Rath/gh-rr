@@ -1,43 +1,16 @@
 
-[Test_run/config_does_not_exist - 1]
-
----
-
-[Test_run/config_does_not_exist - 2]
-please create <tempdir>/gh-rr.yml to configure your repositories
-
----
-
-[Test_run/config_does_not_exist - 3]
-null
----
-
-[Test_run/dry_run - 1]
-would have used `gh pr edit --repo octocat/hello-world` to request reviews from:
-  - octocat
-
----
-
-[Test_run/dry_run - 2]
-
----
-
-[Test_run/dry_run - 3]
-null
----
-
-[Test_run/explicit_group - 1]
+[Test_run/when_an_explicit_group_is_provided_using_the_longhand_flag - 1]
 requested reviews on https://github.com/octocat/hello-world/pull/123 from:
   - octodog
   - octopus
 
 ---
 
-[Test_run/explicit_group - 2]
+[Test_run/when_an_explicit_group_is_provided_using_the_longhand_flag - 2]
 
 ---
 
-[Test_run/explicit_group - 3]
+[Test_run/when_an_explicit_group_is_provided_using_the_longhand_flag - 3]
 [
  "pr",
  "edit",
@@ -51,153 +24,74 @@ requested reviews on https://github.com/octocat/hello-world/pull/123 from:
 ]
 ---
 
-[Test_run/group_does_not_exist_in_config - 1]
-
----
-
-[Test_run/group_does_not_exist_in_config - 2]
-octocat/hello-world does not have a group named does-not-exist
-
----
-
-[Test_run/group_does_not_exist_in_config - 3]
-null
----
-
-[Test_run/invalid_config - 1]
-
----
-
-[Test_run/invalid_config - 2]
-yaml: unmarshal errors:
-  line 1: cannot unmarshal !!! `` into main.Config
-
----
-
-[Test_run/invalid_config - 3]
-null
----
-
-[Test_run/repository_does_not_exist_in_config - 1]
-
----
-
-[Test_run/repository_does_not_exist_in_config - 2]
-no reviewers are configured for octocat/hello-world
-
----
-
-[Test_run/repository_does_not_exist_in_config - 3]
-null
----
-
-[Test_run/when_--repo_is_a_url - 1]
-
----
-
-[Test_run/when_--repo_is_a_url - 2]
-repository should be in the format of <owner>/<repository>
-
----
-
-[Test_run/when_--repo_is_a_url - 3]
-null
----
-
-[Test_run/when_--repo_is_not_prefixed_with_the_owner - 1]
-
----
-
-[Test_run/when_--repo_is_not_prefixed_with_the_owner - 2]
-repository should be in the format of <owner>/<repository>
-
----
-
-[Test_run/when_--repo_is_not_prefixed_with_the_owner - 3]
-null
----
-
-[Test_run/when_--repo_is_not_prefixed_with_the_owner#01 - 1]
-
----
-
-[Test_run/when_--repo_is_not_prefixed_with_the_owner#01 - 2]
-repository should be in the format of <owner>/<repository>
-
----
-
-[Test_run/when_--repo_is_not_prefixed_with_the_owner#01 - 3]
-null
----
-
-[Test_run/when_--repo_is_provided - 1]
-requested reviews on https://github.com/octocat/hello-sunshine/pull/123 from:
-  - octodog
-  - octopus
-
----
-
-[Test_run/when_--repo_is_provided - 2]
-
----
-
-[Test_run/when_--repo_is_provided - 3]
-[
- "pr",
- "edit",
- "123",
- "--repo",
- "octocat/hello-sunshine",
- "--add-reviewer",
- "octodog",
- "--add-reviewer",
- "octopus"
-]
----
-
-[Test_run/when_-R_is_provided - 1]
-requested reviews on https://github.com/octocat/hello-sunshine/pull/123 from:
-  - octodog
-  - octopus
-
----
-
-[Test_run/when_-R_is_provided - 2]
-
----
-
-[Test_run/when_-R_is_provided - 3]
-[
- "pr",
- "edit",
- "123",
- "--repo",
- "octocat/hello-sunshine",
- "--add-reviewer",
- "octodog",
- "--add-reviewer",
- "octopus"
-]
----
-
-[Test_run/when_a_group_is_provided_(shorthand) - 1]
+[Test_run/when_an_explicit_group_is_provided_using_the_shorthand_flag - 1]
 requested reviews on https://github.com/octocat/hello-world/pull/123 from:
   - octodog
   - octopus
 
 ---
 
-[Test_run/when_a_group_is_provided_(shorthand) - 2]
+[Test_run/when_an_explicit_group_is_provided_using_the_shorthand_flag - 2]
 
 ---
 
-[Test_run/when_a_group_is_provided_(shorthand) - 3]
+[Test_run/when_an_explicit_group_is_provided_using_the_shorthand_flag - 3]
 [
  "pr",
  "edit",
  "123",
  "--repo",
  "octocat/hello-world",
+ "--add-reviewer",
+ "octodog",
+ "--add-reviewer",
+ "octopus"
+]
+---
+
+[Test_run/when_an_explicit_repository_is_provided_using_the_longhand_flag - 1]
+requested reviews on https://github.com/octocat/hello-sunshine/pull/123 from:
+  - octodog
+  - octopus
+
+---
+
+[Test_run/when_an_explicit_repository_is_provided_using_the_longhand_flag - 2]
+
+---
+
+[Test_run/when_an_explicit_repository_is_provided_using_the_longhand_flag - 3]
+[
+ "pr",
+ "edit",
+ "123",
+ "--repo",
+ "octocat/hello-sunshine",
+ "--add-reviewer",
+ "octodog",
+ "--add-reviewer",
+ "octopus"
+]
+---
+
+[Test_run/when_an_explicit_repository_is_provided_using_the_shorthand_flag - 1]
+requested reviews on https://github.com/octocat/hello-sunshine/pull/123 from:
+  - octodog
+  - octopus
+
+---
+
+[Test_run/when_an_explicit_repository_is_provided_using_the_shorthand_flag - 2]
+
+---
+
+[Test_run/when_an_explicit_repository_is_provided_using_the_shorthand_flag - 3]
+[
+ "pr",
+ "edit",
+ "123",
+ "--repo",
+ "octocat/hello-sunshine",
  "--add-reviewer",
  "octodog",
  "--add-reviewer",
@@ -215,6 +109,20 @@ unknown flag: --blah
 ---
 
 [Test_run/when_an_unknown_flag_is_requested - 3]
+null
+---
+
+[Test_run/when_doing_a_dry-run - 1]
+would have used `gh pr edit --repo octocat/hello-world` to request reviews from:
+  - octocat
+
+---
+
+[Test_run/when_doing_a_dry-run - 2]
+
+---
+
+[Test_run/when_doing_a_dry-run - 3]
 null
 ---
 
@@ -280,6 +188,85 @@ requested reviews on https://github.com/octocat/hello-world/pull/1 from:
  "--add-reviewer",
  "octopus"
 ]
+---
+
+[Test_run/when_the_config_file_does_not_exist - 1]
+
+---
+
+[Test_run/when_the_config_file_does_not_exist - 2]
+please create <tempdir>/gh-rr.yml to configure your repositories
+
+---
+
+[Test_run/when_the_config_file_does_not_exist - 3]
+null
+---
+
+[Test_run/when_the_config_file_is_invalid - 1]
+
+---
+
+[Test_run/when_the_config_file_is_invalid - 2]
+yaml: unmarshal errors:
+  line 1: cannot unmarshal !!! `` into main.Config
+
+---
+
+[Test_run/when_the_config_file_is_invalid - 3]
+null
+---
+
+[Test_run/when_the_explicit_repository_is_a_url - 1]
+
+---
+
+[Test_run/when_the_explicit_repository_is_a_url - 2]
+repository should be in the format of <owner>/<repository>
+
+---
+
+[Test_run/when_the_explicit_repository_is_a_url - 3]
+null
+---
+
+[Test_run/when_the_explicit_repository_is_not_prefixed_with_the_owner - 1]
+
+---
+
+[Test_run/when_the_explicit_repository_is_not_prefixed_with_the_owner - 2]
+repository should be in the format of <owner>/<repository>
+
+---
+
+[Test_run/when_the_explicit_repository_is_not_prefixed_with_the_owner - 3]
+null
+---
+
+[Test_run/when_the_group_does_not_exist_in_config - 1]
+
+---
+
+[Test_run/when_the_group_does_not_exist_in_config - 2]
+octocat/hello-world does not have a group named does-not-exist
+
+---
+
+[Test_run/when_the_group_does_not_exist_in_config - 3]
+null
+---
+
+[Test_run/when_the_repository_does_not_exist_in_config - 1]
+
+---
+
+[Test_run/when_the_repository_does_not_exist_in_config - 2]
+no reviewers are configured for octocat/hello-world
+
+---
+
+[Test_run/when_the_repository_does_not_exist_in_config - 3]
+null
 ---
 
 [Test_run/when_the_target_is_not_a_number - 1]
