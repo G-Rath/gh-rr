@@ -146,27 +146,6 @@ func writeConfigFileInTempDir(t *testing.T, content string) string {
 	return p
 }
 
-// writeTempConfigFile makes a temporary configuration file with the given
-// content for testing, which is automatically cleaned up when testing finishes
-func writeTempConfigFile(t *testing.T, content string) string {
-	t.Helper()
-
-	f, err := os.CreateTemp("", "gh-rr-test-config-*.yml")
-	if err != nil {
-		t.Fatalf("could not create config file: %v", err)
-	}
-
-	_, err = f.WriteString(content)
-	if err != nil {
-		t.Fatalf("could not write to config file: %v", err)
-	}
-
-	// ensure the file is removed when we're done testing
-	t.Cleanup(func() { _ = os.RemoveAll(f.Name()) })
-
-	return f.Name()
-}
-
 // expectNoCallToGh builds a function that fails the test if it is called
 func expectNoCallToGh(t *testing.T) ghExecutor {
 	t.Helper()
