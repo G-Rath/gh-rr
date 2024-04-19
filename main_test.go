@@ -293,9 +293,6 @@ func Test_parseConfig(t *testing.T) {
 				return
 			}
 
-			// these should be equal
-			tt.want.Path = f
-
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("parseConfig() got = %v, want %v", got, tt.want)
 			}

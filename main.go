@@ -16,11 +16,10 @@ import (
 
 type Config struct {
 	Repositories map[string]map[string][]string `yaml:"repositories"`
-	Path         string                         `yaml:""`
 }
 
 func parseConfig(file string) (Config, error) {
-	config := Config{Path: file}
+	config := Config{}
 
 	out, err := os.ReadFile(file)
 
@@ -35,16 +34,6 @@ func parseConfig(file string) (Config, error) {
 	}
 
 	return config, nil
-}
-
-func loadConfigFile(dir string) (Config, error) {
-	file := filepath.Join(dir, "gh-rr.yml")
-
-	if _, err := os.Stat(file); err != nil {
-		return Config{Path: file}, err
-	}
-
-	return parseConfig(file)
 }
 
 var ErrRepositoryNotConfigured = errors.New("no reviewers are configured for repository")
@@ -142,12 +131,13 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 		return 1
 	}
 
-	config, err := loadConfigFile(*configDir)
+	configFile := filepath.Join(*configDir, "gh-rr.yml")
+	config, err := parseConfig(configFile)
 
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			// todo: this could probably be worded better
-			fmt.Fprintf(stderr, "please create %s to configure your repositories\n", config.Path)
+			fmt.Fprintf(stderr, "please create %s to configure your repositories\n", configFile)
 		} else {
 			fmt.Fprintf(stderr, "%v\n", err)
 		}
