@@ -76,16 +76,6 @@ func mustGetUserHomeDir() string {
 	return dir
 }
 
-func inferCurrentRepository() (string, error) {
-	repo, err := repository.Current()
-
-	if err != nil {
-		return "", err
-	}
-
-	return fmt.Sprintf("%s/%s", repo.Owner, repo.Name), nil
-}
-
 // ghExecutor invokes a gh command in a subprocess and captures the output and error streams
 type ghExecutor = func(args ...string) (stdout, stderr string)
 
@@ -116,13 +106,15 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 	repo := *repoF
 
 	if repo == "" {
-		repo, err = inferCurrentRepository()
+		currentRepo, err := repository.Current()
 
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "could not determine repository: %v\n", err)
 
 			return 1
 		}
+
+		repo = fmt.Sprintf("%s/%s", currentRepo.Owner, currentRepo.Name)
 	}
 
 	if _, _, found := strings.Cut(repo, "/"); !found || strings.HasPrefix(repo, "http") {
