@@ -15,11 +15,27 @@ import (
 )
 
 type config struct {
-	Repositories map[string]map[string][]string `yaml:"repositories"`
+	Repositories repositories `yaml:"repositories"`
+}
+
+type repositories map[string]map[string][]string
+
+func (r *repositories) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var repos map[string]map[string][]string
+
+	if err := unmarshal(&repos); err != nil {
+		return err
+	}
+
+	for s, v := range repos {
+		(*r)[strings.ToLower(s)] = v
+	}
+
+	return nil
 }
 
 func parseConfig(file string) (config, error) {
-	conf := config{}
+	conf := config{Repositories: map[string]map[string][]string{}}
 
 	out, err := os.ReadFile(file)
 
@@ -137,7 +153,7 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 		return 1
 	}
 
-	reviewers, err := determineReviewers(conf, repo, *group)
+	reviewers, err := determineReviewers(conf, strings.ToLower(repo), *group)
 
 	if err != nil {
 		if errors.Is(err, errRepositoryNotConfigured) {

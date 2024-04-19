@@ -161,6 +161,15 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
+			name: "when the config file is invalid (in a different way)",
+			args: args{
+				args:   []string{"123"},
+				ghExec: expectNoCallToGh(t),
+				config: "repositories: 1",
+			},
+			exit: 1,
+		},
+		{
 			name: "when the repository does not exist in config",
 			args: args{
 				args:   []string{"123"},
@@ -274,6 +283,24 @@ func Test_run(t *testing.T) {
 				`,
 			},
 			exit: 1,
+		},
+		{
+			name: "when repo case is different to whats in the config",
+			args: args{
+				args:   []string{"-R", "OctoCat/hello-sunshine", "123"},
+				ghExec: expectCallToGh(t, "OctoCat/hello-sunshine", "123"),
+				config: `
+					repositories:
+						octocat/hello-world:
+							default:
+								- octocat
+						octocat/Hello-Sunshine:
+							default:
+								- octodog
+								- octopus
+				`,
+			},
+			exit: 0,
 		},
 	}
 	for _, tt := range tests {
