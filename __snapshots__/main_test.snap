@@ -1,4 +1,18 @@
 
+[Test_run/when_an_array_is_provided_instead_of_a_map_of_groups - 1]
+
+---
+
+[Test_run/when_an_array_is_provided_instead_of_a_map_of_groups - 2]
+yaml: unmarshal errors:
+  line 3: cannot unmarshal !!seq into map[string][]string
+
+---
+
+[Test_run/when_an_array_is_provided_instead_of_a_map_of_groups - 3]
+null
+---
+
 [Test_run/when_an_explicit_group_is_provided_using_the_longhand_flag - 1]
 requested reviews on https://github.com/octocat/hello-world/pull/123 from:
   - octodog

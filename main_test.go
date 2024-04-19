@@ -200,6 +200,20 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
+			name: "when an array is provided instead of a map of groups",
+			args: args{
+				args:   []string{},
+				ghExec: expectCallToGh(t, "octocat/hello-world", "1"),
+				config: `
+					repositories:
+						octocat/hello-world:
+							- octodog
+							- octopus
+				`,
+			},
+			exit: 1,
+		},
+		{
 			name: "when doing a dry-run",
 			args: args{
 				args:   []string{"--dry-run", "123"},
