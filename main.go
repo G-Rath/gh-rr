@@ -14,37 +14,37 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
+type config struct {
 	Repositories map[string]map[string][]string `yaml:"repositories"`
 }
 
-func parseConfig(file string) (Config, error) {
-	config := Config{}
+func parseConfig(file string) (config, error) {
+	conf := config{}
 
 	out, err := os.ReadFile(file)
 
 	if err != nil {
-		return config, err
+		return conf, err
 	}
 
-	err = yaml.Unmarshal(out, &config)
+	err = yaml.Unmarshal(out, &conf)
 
 	if err != nil {
-		return config, err
+		return conf, err
 	}
 
-	return config, nil
+	return conf, nil
 }
 
 var errRepositoryNotConfigured = errors.New("no reviewers are configured for repository")
 var errGroupNotConfigured = errors.New("repository is not configured with group")
 
-func determineReviewers(config Config, repository string, group string) ([]string, error) {
-	if _, ok := config.Repositories[repository]; !ok {
+func determineReviewers(conf config, repository string, group string) ([]string, error) {
+	if _, ok := conf.Repositories[repository]; !ok {
 		return []string{}, errRepositoryNotConfigured
 	}
 
-	reviewers, ok := config.Repositories[repository][group]
+	reviewers, ok := conf.Repositories[repository][group]
 
 	if !ok {
 		return []string{}, errGroupNotConfigured
@@ -123,13 +123,13 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 		return 1
 	}
 
-	configFile := filepath.Join(*configDir, "gh-rr.yml")
-	config, err := parseConfig(configFile)
+	confPath := filepath.Join(*configDir, "gh-rr.yml")
+	conf, err := parseConfig(confPath)
 
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			// todo: this could probably be worded better
-			fmt.Fprintf(stderr, "please create %s to configure your repositories\n", configFile)
+			fmt.Fprintf(stderr, "please create %s to configure your repositories\n", confPath)
 		} else {
 			fmt.Fprintf(stderr, "%v\n", err)
 		}
@@ -137,7 +137,7 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 		return 1
 	}
 
-	reviewers, err := determineReviewers(config, repo, *group)
+	reviewers, err := determineReviewers(conf, repo, *group)
 
 	if err != nil {
 		if errors.Is(err, errRepositoryNotConfigured) {
