@@ -36,18 +36,18 @@ func parseConfig(file string) (Config, error) {
 	return config, nil
 }
 
-var ErrRepositoryNotConfigured = errors.New("no reviewers are configured for repository")
-var ErrGroupNotConfigured = errors.New("repository is not configured with group")
+var errRepositoryNotConfigured = errors.New("no reviewers are configured for repository")
+var errGroupNotConfigured = errors.New("repository is not configured with group")
 
 func determineReviewers(config Config, repository string, group string) ([]string, error) {
 	if _, ok := config.Repositories[repository]; !ok {
-		return []string{}, ErrRepositoryNotConfigured
+		return []string{}, errRepositoryNotConfigured
 	}
 
 	reviewers, ok := config.Repositories[repository][group]
 
 	if !ok {
-		return []string{}, ErrGroupNotConfigured
+		return []string{}, errGroupNotConfigured
 	}
 
 	return reviewers, nil
@@ -140,9 +140,9 @@ func run(args []string, stdout, stderr io.Writer, ghExec ghExecutor) int {
 	reviewers, err := determineReviewers(config, repo, *group)
 
 	if err != nil {
-		if errors.Is(err, ErrRepositoryNotConfigured) {
+		if errors.Is(err, errRepositoryNotConfigured) {
 			fmt.Fprintf(stderr, "no reviewers are configured for %s\n", repo)
-		} else if errors.Is(err, ErrGroupNotConfigured) {
+		} else if errors.Is(err, errGroupNotConfigured) {
 			fmt.Fprintf(stderr, "%s does not have a group named %s\n", repo, *group)
 		} else {
 			fmt.Fprintf(stderr, "%v\n", err)
