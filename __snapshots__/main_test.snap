@@ -190,6 +190,31 @@ requested reviews on https://github.com/octocat/hello-world/pull/1 from:
 ]
 ---
 
+[Test_run/when_repo_case_is_different_to_whats_in_the_config - 1]
+requested reviews on https://github.com/OctoCat/hello-sunshine/pull/123 from:
+  - octodog
+  - octopus
+
+---
+
+[Test_run/when_repo_case_is_different_to_whats_in_the_config - 2]
+
+---
+
+[Test_run/when_repo_case_is_different_to_whats_in_the_config - 3]
+[
+ "pr",
+ "edit",
+ "123",
+ "--repo",
+ "OctoCat/hello-sunshine",
+ "--add-reviewer",
+ "octodog",
+ "--add-reviewer",
+ "octopus"
+]
+---
+
 [Test_run/when_the_config_file_does_not_exist - 1]
 
 ---
@@ -214,6 +239,20 @@ yaml: unmarshal errors:
 ---
 
 [Test_run/when_the_config_file_is_invalid - 3]
+null
+---
+
+[Test_run/when_the_config_file_is_invalid_(in_a_different_way) - 1]
+
+---
+
+[Test_run/when_the_config_file_is_invalid_(in_a_different_way) - 2]
+yaml: unmarshal errors:
+  line 1: cannot unmarshal !!int `1` into map[string]map[string][]string
+
+---
+
+[Test_run/when_the_config_file_is_invalid_(in_a_different_way) - 3]
 null
 ---
 
