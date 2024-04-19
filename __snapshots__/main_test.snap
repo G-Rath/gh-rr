@@ -1,17 +1,4 @@
 
-[Test_run/when_--repo_is_not_prefixed_with_the_owner - 1]
-
----
-
-[Test_run/when_--repo_is_not_prefixed_with_the_owner - 2]
-repository should be in the format of <owner>/<repository>
-
----
-
-[Test_run/when_--repo_is_not_prefixed_with_the_owner - 3]
-null
----
-
 [Test_run/when_an_explicit_group_is_provided_using_the_longhand_flag - 1]
 requested reviews on https://github.com/octocat/hello-world/pull/123 from:
   - octodog

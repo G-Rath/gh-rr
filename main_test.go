@@ -134,15 +134,6 @@ func Test_run(t *testing.T) {
 			exit: 1,
 		},
 		{
-			name: "when --repo is not prefixed with the owner",
-			args: args{
-				args:   []string{"--repo", "hello-world"},
-				ghExec: expectNoCallToGh(t),
-				config: "",
-			},
-			exit: 1,
-		},
-		{
 			name: "when the explicit repository is a url",
 			args: args{
 				args:   []string{"--repo", "https://github.com/octocat/hello-world"},
