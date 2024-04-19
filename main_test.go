@@ -211,7 +211,7 @@ func Test_run(t *testing.T) {
 							- octopus
 				`,
 			},
-			exit: 1,
+			exit: 0,
 		},
 		{
 			name: "when doing a dry-run",
