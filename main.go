@@ -18,7 +18,7 @@ type config struct {
 	Repositories repositories `yaml:"repositories"`
 }
 
-type repositories map[string]repositoryGroups
+type repositories map[string]map[string][]string
 type repositoryGroups struct {
 	Groups map[string][]string
 }
@@ -26,19 +26,16 @@ type repositoryGroups struct {
 func (rg *repositoryGroups) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var group []string
 
+	// allow an array to be provided as a shorthand for the default group
 	if err := unmarshal(&group); err == nil {
 		rg.Groups = map[string][]string{"default": group}
 
 		return nil
 	}
 
-	var groups map[string][]string
-
-	if err := unmarshal(&groups); err != nil {
+	if err := unmarshal(&rg.Groups); err != nil {
 		return err
 	}
-
-	rg.Groups = groups
 
 	return nil
 }
@@ -51,14 +48,14 @@ func (r *repositories) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	for s, v := range repos {
-		(*r)[strings.ToLower(s)] = v
+		(*r)[strings.ToLower(s)] = v.Groups
 	}
 
 	return nil
 }
 
 func parseConfig(file string) (config, error) {
-	conf := config{Repositories: map[string]repositoryGroups{}}
+	conf := config{Repositories: map[string]map[string][]string{}}
 
 	out, err := os.ReadFile(file)
 
@@ -83,7 +80,7 @@ func determineReviewers(conf config, repository string, group string) ([]string,
 		return []string{}, errRepositoryNotConfigured
 	}
 
-	reviewers, ok := conf.Repositories[repository].Groups[group]
+	reviewers, ok := conf.Repositories[repository][group]
 
 	if !ok {
 		return []string{}, errGroupNotConfigured
