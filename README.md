@@ -22,18 +22,17 @@ repositories:
     security:
       - octopus
   g-rath/my-awesome-app:
+    # this is the implicit default group that will be used for this repository
+    - g-rath
+    - octocat
+  g-rath/my-awesome-api:
     # this is the default group that will be used for this repository
     default:
       - g-rath
-      - octocat
     # this is an alternative group for this repository, which can be selected with -f|--from
     infra:
       - octodog
       - octopus
-  g-rath/dotfiles:
-    # this is the default group that will be used for this repository
-    default:
-      - g-rath
 ```
 
 Then start requesting reviewers on your pull requests:

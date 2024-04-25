@@ -19,16 +19,36 @@ type config struct {
 }
 
 type repositories map[string]map[string][]string
+type repositoryGroups struct {
+	Groups map[string][]string
+}
+
+func (rg *repositoryGroups) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var group []string
+
+	// allow an array to be provided as a shorthand for the default group
+	if err := unmarshal(&group); err == nil {
+		rg.Groups = map[string][]string{"default": group}
+
+		return nil
+	}
+
+	if err := unmarshal(&rg.Groups); err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func (r *repositories) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var repos map[string]map[string][]string
+	var repos map[string]repositoryGroups
 
 	if err := unmarshal(&repos); err != nil {
 		return err
 	}
 
 	for s, v := range repos {
-		(*r)[strings.ToLower(s)] = v
+		(*r)[strings.ToLower(s)] = v.Groups
 	}
 
 	return nil
